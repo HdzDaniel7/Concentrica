@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Soldadura.App/Soldadura.App.csproj" />
+  <Project Path="Soldadura.Core/Soldadura.Core.csproj" />
+  <Project Path="Soldadura.Tests/Soldadura.Tests.csproj" />
+</Solution>
