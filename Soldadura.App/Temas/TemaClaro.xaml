@@ -1,0 +1,37 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ── Fondos ───────────────────────────────────────────────────── -->
+    <SolidColorBrush x:Key="PincelFondoVentana"   Color="#F7FAFC"/>
+    <SolidColorBrush x:Key="PincelFondoPanel"     Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="PincelFondoControl"   Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="PincelFondoLectura"   Color="#F7FAFC"/>
+    <SolidColorBrush x:Key="PincelFondoCabecera"  Color="#F7FAFC"/>
+    <SolidColorBrush x:Key="PincelFondoAlt"       Color="#FAFCFF"/>
+    <SolidColorBrush x:Key="PincelFondoResultado" Color="#FAFAFA"/>
+
+    <!-- ── Texto ────────────────────────────────────────────────────── -->
+    <SolidColorBrush x:Key="PincelTextoPrimario"    Color="#1A202C"/>
+    <SolidColorBrush x:Key="PincelTextoSecundario"  Color="#718096"/>
+    <SolidColorBrush x:Key="PincelTextoDesactivado" Color="#A0AEC0"/>
+    <SolidColorBrush x:Key="PincelTextoLectura"     Color="#4A5568"/>
+    <SolidColorBrush x:Key="PincelTextoEstado"      Color="#276749"/>
+
+    <!-- ── Acento y bordes ──────────────────────────────────────────── -->
+    <SolidColorBrush x:Key="PincelPrimario"    Color="#2B6CB0"/>
+    <SolidColorBrush x:Key="PincelBorde"       Color="#CBD5E0"/>
+    <SolidColorBrush x:Key="PincelBordeFoco"   Color="#3182CE"/>
+    <SolidColorBrush x:Key="PincelBordeError"  Color="#E53935"/>
+    <SolidColorBrush x:Key="PincelSeparador"   Color="#E2E8F0"/>
+
+    <!-- ── Botones ──────────────────────────────────────────────────── -->
+    <SolidColorBrush x:Key="PincelFondoBoton"  Color="#EDF2F7"/>
+    <SolidColorBrush x:Key="PincelHoverBoton"  Color="#E2E8F0"/>
+    <SolidColorBrush x:Key="PincelPresBoton"   Color="#CBD5E0"/>
+
+    <!-- ── Diagrama de ejes ─────────────────────────────────────────── -->
+    <SolidColorBrush x:Key="PincelFondoDiagrama"    Color="#2D3748"/>
+    <SolidColorBrush x:Key="PincelPiezaDiagrama"    Color="#4A5568"/>
+    <SolidColorBrush x:Key="PincelTextoDiagrama"    Color="#E2E8F0"/>
+
+</ResourceDictionary>

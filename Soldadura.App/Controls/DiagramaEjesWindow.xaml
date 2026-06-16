@@ -1,0 +1,212 @@
+<Window x:Class="Soldadura.App.Controls.DiagramaEjesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Referencia de ejes del robot"
+        Width="420" Height="540"
+        ResizeMode="CanMinimize"
+        Background="{DynamicResource PincelFondoVentana}"
+        Foreground="{DynamicResource PincelTextoPrimario}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="16,12,16,16">
+
+            <!-- Instrucción -->
+            <TextBlock TextWrapping="Wrap" FontSize="11"
+                       Foreground="{DynamicResource PincelTextoSecundario}"
+                       Margin="0,0,0,10">
+                Configura los nombres que usa el robot Fanuc para cada eje de ajuste.
+                El ángulo define cuántos grados (horario) rota el eje X del robot
+                respecto a la marca de 0° de la pieza.
+            </TextBlock>
+
+            <!-- Campos de nombres -->
+            <Grid Margin="0,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="4"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="4"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="4"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Nombre eje X (lateral):  "
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource PincelTextoSecundario}" FontSize="11"/>
+                <TextBox   Grid.Row="0" Grid.Column="1"
+                           Text="{Binding NombreEjeX, UpdateSourceTrigger=PropertyChanged}"
+                           Padding="5,3" BorderBrush="{DynamicResource PincelBorde}"
+                           Background="{DynamicResource PincelFondoControl}"
+                           Foreground="{DynamicResource PincelTextoPrimario}"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Nombre eje Y (perpend.):  "
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource PincelTextoSecundario}" FontSize="11"/>
+                <TextBox   Grid.Row="2" Grid.Column="1"
+                           Text="{Binding NombreEjeY, UpdateSourceTrigger=PropertyChanged}"
+                           Padding="5,3" BorderBrush="{DynamicResource PincelBorde}"
+                           Background="{DynamicResource PincelFondoControl}"
+                           Foreground="{DynamicResource PincelTextoPrimario}"/>
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="Nombre eje Z (foco):  "
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource PincelTextoSecundario}" FontSize="11"/>
+                <TextBox   Grid.Row="4" Grid.Column="1"
+                           Text="{Binding NombreEjeZ, UpdateSourceTrigger=PropertyChanged}"
+                           Padding="5,3" BorderBrush="{DynamicResource PincelBorde}"
+                           Background="{DynamicResource PincelFondoControl}"
+                           Foreground="{DynamicResource PincelTextoPrimario}"/>
+
+                <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
+                    <TextBlock Text="Ángulo robot-X desde 0° (° horario):  "
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource PincelTextoSecundario}" FontSize="11"/>
+                    <Slider x:Name="sliderAngulo" Minimum="-180" Maximum="180"
+                            Value="{Binding AnguloEjesGrados, UpdateSourceTrigger=PropertyChanged}"
+                            Width="120" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding AnguloEjesGrados, StringFormat=N0}"
+                               Margin="6,0,0,0" Width="32" VerticalAlignment="Center"
+                               Foreground="{DynamicResource PincelTextoPrimario}"/>
+                    <TextBlock Text="°" VerticalAlignment="Center"
+                               Foreground="{DynamicResource PincelTextoSecundario}"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Vista superior -->
+            <TextBlock Text="Vista superior — ajuste X/Y (centrado)"
+                       FontSize="11" FontWeight="SemiBold" Margin="0,8,0,4"
+                       Foreground="{DynamicResource PincelTextoSecundario}"/>
+
+            <Border BorderBrush="{DynamicResource PincelBorde}" BorderThickness="1"
+                    CornerRadius="4" HorizontalAlignment="Left">
+                <Canvas Width="280" Height="280"
+                        Background="{DynamicResource PincelFondoDiagrama}">
+
+                    <!-- Workpiece (círculo de la pieza) -->
+                    <Ellipse Width="200" Height="200" Canvas.Left="40" Canvas.Top="40"
+                             Stroke="#718096" StrokeThickness="2"
+                             Fill="{DynamicResource PincelPiezaDiagrama}"/>
+
+                    <!-- Centro -->
+                    <Line X1="134" Y1="140" X2="146" Y2="140" Stroke="#718096" StrokeThickness="1"/>
+                    <Line X1="140" Y1="134" X2="140" Y2="146" Stroke="#718096" StrokeThickness="1"/>
+
+                    <!-- Punto láser en el centro -->
+                    <Ellipse Width="7" Height="7" Canvas.Left="136.5" Canvas.Top="136.5"
+                             Fill="#FFD700"/>
+                    <TextBlock Canvas.Left="148" Canvas.Top="130" Text="Láser"
+                               Foreground="#FFD700" FontSize="9"/>
+
+                    <!-- Marca 0° (borde derecho del círculo) -->
+                    <Ellipse Width="8" Height="8" Canvas.Left="237" Canvas.Top="136"
+                             Fill="White" Stroke="#CBD5E0" StrokeThickness="1"/>
+                    <TextBlock Canvas.Left="248" Canvas.Top="132" Text="0°"
+                               Foreground="{DynamicResource PincelTextoDiagrama}" FontSize="10"/>
+
+                    <!-- Grupo de ejes X/Y (rotado por AnguloEjesGrados) -->
+                    <Canvas Canvas.Left="140" Canvas.Top="140">
+                        <Canvas.RenderTransform>
+                            <RotateTransform Angle="{Binding AnguloEjesGrados}"
+                                             CenterX="0" CenterY="0"/>
+                        </Canvas.RenderTransform>
+
+                        <!-- Eje X del robot (azul, hacia la derecha) -->
+                        <Line X1="0" Y1="0" X2="85" Y2="0"
+                              Stroke="#4299E1" StrokeThickness="2.5"/>
+                        <Polygon Points="90,0 78,-5 78,5" Fill="#4299E1"/>
+                        <TextBlock Canvas.Left="93" Canvas.Top="-10"
+                                   Text="{Binding NombreEjeX}"
+                                   Foreground="#4299E1" FontSize="11" FontWeight="Bold"/>
+
+                        <!-- Eje Y del robot (verde, hacia arriba) -->
+                        <Line X1="0" Y1="0" X2="0" Y2="-85"
+                              Stroke="#68D391" StrokeThickness="2.5"/>
+                        <Polygon Points="0,-90 -5,-78 5,-78" Fill="#68D391"/>
+                        <TextBlock Canvas.Left="-15" Canvas.Top="-108"
+                                   Text="{Binding NombreEjeY}"
+                                   Foreground="#68D391" FontSize="11" FontWeight="Bold"/>
+                    </Canvas>
+
+                </Canvas>
+            </Border>
+
+            <!-- Vista lateral -->
+            <TextBlock Text="Vista lateral — ajuste Z (foco / penetración)"
+                       FontSize="11" FontWeight="SemiBold" Margin="0,14,0,4"
+                       Foreground="{DynamicResource PincelTextoSecundario}"/>
+
+            <Border BorderBrush="{DynamicResource PincelBorde}" BorderThickness="1"
+                    CornerRadius="4" HorizontalAlignment="Left">
+                <Canvas Width="280" Height="140"
+                        Background="{DynamicResource PincelFondoDiagrama}">
+
+                    <!-- Cabezal láser -->
+                    <Rectangle Canvas.Left="110" Canvas.Top="8" Width="60" Height="18"
+                               Fill="#4A5568" RadiusX="3" RadiusY="3"/>
+                    <TextBlock Canvas.Left="114" Canvas.Top="10" Text="Cabezal"
+                               Foreground="#A0AEC0" FontSize="9"/>
+
+                    <!-- Haz láser (línea discontinua) -->
+                    <Line X1="140" Y1="26" X2="140" Y2="70"
+                          Stroke="#FFD700" StrokeThickness="1.5"
+                          StrokeDashArray="3,2"/>
+
+                    <!-- Flecha eje Z (naranja, hacia abajo = aumentar foco) -->
+                    <Line X1="160" Y1="30" X2="160" Y2="66"
+                          Stroke="#F6AD55" StrokeThickness="2.5"/>
+                    <Polygon Points="160,72 154,60 166,60" Fill="#F6AD55"/>
+                    <TextBlock Canvas.Left="166" Canvas.Top="44"
+                               Text="{Binding NombreEjeZ}"
+                               Foreground="#F6AD55" FontSize="11" FontWeight="Bold"/>
+
+                    <!-- Superficie de la pieza -->
+                    <Line X1="40" Y1="70" X2="240" Y2="70"
+                          Stroke="#68D391" StrokeThickness="2"/>
+                    <TextBlock Canvas.Left="42" Canvas.Top="72" Text="Superficie"
+                               Foreground="#68D391" FontSize="9"/>
+
+                    <!-- Cuerpo de la pieza -->
+                    <Rectangle Canvas.Left="40" Canvas.Top="70" Width="200" Height="52"
+                               Fill="{DynamicResource PincelPiezaDiagrama}"
+                               Stroke="#718096" StrokeThickness="1"/>
+
+                    <!-- Cordón de soldadura (representación simple) -->
+                    <Path Stroke="#4299E1" StrokeThickness="1.5"
+                          Fill="#2B6CB0" Opacity="0.7">
+                        <Path.Data>
+                            <PathGeometry>
+                                <PathFigure StartPoint="115,70" IsClosed="True">
+                                    <BezierSegment Point1="120,90" Point2="155,100" Point3="165,70"/>
+                                </PathFigure>
+                            </PathGeometry>
+                        </Path.Data>
+                    </Path>
+                    <TextBlock Canvas.Left="126" Canvas.Top="78" Text="Cordón"
+                               Foreground="#90CDF4" FontSize="8"/>
+
+                </Canvas>
+            </Border>
+
+            <!-- Leyenda -->
+            <StackPanel Margin="0,12,0,0">
+                <TextBlock FontSize="10" FontWeight="SemiBold" Margin="0,0,0,4"
+                           Foreground="{DynamicResource PincelTextoSecundario}">
+                    Convención de ajustes:
+                </TextBlock>
+                <TextBlock FontSize="10" Foreground="{DynamicResource PincelTextoSecundario}"
+                           TextWrapping="Wrap">
+                    • X / Y: desplazan el láser lateralmente (centrado). El signo viene del
+                    análisis de Fourier: ajuste = −descentrado medido.&#10;
+                    • Z: varía la posición focal del láser a lo largo del haz (penetración).&#10;
+                    • La magnitud del ajuste Z requiere el coeficiente foco↔Z del perfil.
+                </TextBlock>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>

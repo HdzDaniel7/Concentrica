@@ -1,0 +1,145 @@
+<UserControl x:Class="Soldadura.App.Controls.VisorImagen"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:vm="clr-namespace:Soldadura.App.ViewModels"
+             xmlns:conv="clr-namespace:Soldadura.App.Converters">
+    <UserControl.Resources>
+        <conv:DoubleFlexibleConverter x:Key="Dbl"/>
+        <conv:FileNameConverter x:Key="FileName"/>
+        <ObjectDataProvider x:Key="Herramientas" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="vm:Herramienta"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Barra de herramientas -->
+        <WrapPanel Grid.Row="0" Margin="0,0,0,6">
+            <Button Content="Elegir carpeta…" Command="{Binding ElegirCarpetaCommand}" Padding="6,2"/>
+            <Button Content="Ajustar" Click="OnAjustar" Padding="6,2" Margin="6,0,0,0"/>
+            <Button Content="1:1" Click="OnUnoAUno" Padding="6,2" Margin="6,0,0,0"/>
+            <TextBlock Text="Herramienta:" VerticalAlignment="Center" Margin="12,0,4,0"/>
+            <ComboBox ItemsSource="{Binding Source={StaticResource Herramientas}}"
+                      SelectedItem="{Binding Herramienta}" Width="120"/>
+            <Button Content="Limpiar marcas" Command="{Binding LimpiarMarcasCommand}" Padding="6,2" Margin="6,0,0,0"/>
+            <TextBlock Text="Áng/Pos:" VerticalAlignment="Center" Margin="12,0,4,0"/>
+            <TextBox Text="{Binding Angulo, Converter={StaticResource Dbl}, UpdateSourceTrigger=LostFocus}" Width="56"
+                     ToolTip="Ángulo (circular) o posición (lineal) del corte para la muestra que se cree."/>
+            <Button Content="Crear muestra" Command="{Binding CrearMuestraCommand}"
+                    Padding="6,2" Margin="6,0,0,0" FontWeight="Bold"
+                    ToolTip="Añade una muestra nueva a la tabla con el ángulo indicado (un corte = una imagen)."/>
+            <Button Content="Actualizar seleccionada" Command="{Binding ActualizarMuestraCommand}"
+                    Padding="6,2" Margin="6,0,0,0"
+                    ToolTip="Sobrescribe la muestra seleccionada en la tabla con esta medición (corrección)."/>
+        </WrapPanel>
+
+        <!-- Miniaturas + lienzo -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ListBox Grid.Column="0" ItemsSource="{Binding Miniaturas}"
+                     SelectedItem="{Binding RutaSeleccionada}" Margin="0,0,6,0"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Width="104">
+                            <Image Source="{Binding}" Height="72" Stretch="Uniform"/>
+                            <TextBlock Text="{Binding Converter={StaticResource FileName}}"
+                                       FontSize="10" TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <Border Grid.Column="1" x:Name="viewport" Background="#222" ClipToBounds="True"
+                    MouseWheel="OnWheel" MouseLeftButtonDown="OnMouseDown"
+                    MouseLeftButtonUp="OnMouseUp" MouseMove="OnMouseMove" Cursor="Cross"
+                    SizeChanged="OnViewportSizeChanged">
+                <Grid>
+                    <Canvas x:Name="lienzo" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <Canvas.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform x:Name="escala" ScaleX="1" ScaleY="1"/>
+                                <TranslateTransform x:Name="traslado" X="0" Y="0"/>
+                            </TransformGroup>
+                        </Canvas.RenderTransform>
+                        <Image x:Name="imagen" Stretch="None"/>
+                    </Canvas>
+                    <!-- Overlay de marcas (tamaño constante, no se escala) -->
+                    <Canvas x:Name="overlay" IsHitTestVisible="False"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Microscopio / escala / preview -->
+        <Grid Grid.Row="2" Margin="0,6,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Microscopio (escala mm/px)" FontWeight="Bold"/>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <TextBlock Text="Perfil" Width="42" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding PerfilMicroscopio}" Width="90"/>
+                    <TextBlock Text="Obj." Width="32" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                    <TextBox Text="{Binding Objetivo}" Width="50"/>
+                    <Button Content="Guardar perfil" Command="{Binding GuardarPerfilCommand}"
+                            Padding="4,1" Margin="6,0,0,0"
+                            ToolTip="Guarda el perfil actual (nombre + objetivo + mm/px) en el catálogo."/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <TextBlock Text="mm/px" Width="42" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding EscalaMmPorPixel, Converter={StaticResource Dbl}, UpdateSourceTrigger=LostFocus}" Width="90"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <TextBlock Text="Calibrar:" Width="42" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding CalibPixeles, Converter={StaticResource Dbl}, UpdateSourceTrigger=LostFocus}" Width="60"/>
+                    <TextBlock Text="px =" VerticalAlignment="Center" Margin="4,0"/>
+                    <TextBox Text="{Binding CalibMm, Converter={StaticResource Dbl}, UpdateSourceTrigger=LostFocus}" Width="50"/>
+                    <TextBlock Text="mm" VerticalAlignment="Center" Margin="4,0"/>
+                    <Button Content="Calibrar" Command="{Binding CalibrarCommand}" Padding="6,1" Margin="6,0,0,0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,4">
+                    <TextBlock Text="Catálogo:" Width="52" VerticalAlignment="Center"/>
+                    <ComboBox ItemsSource="{Binding CatalogoPerfiles}"
+                              SelectedItem="{Binding PerfilSeleccionado}" Width="170"
+                              ToolTip="Selecciona un perfil guardado para cargarlo.">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <Run Text="{Binding Nombre}"/>
+                                    <Run Text=" "/>
+                                    <Run Text="{Binding Objetivo}"/>
+                                    <Run Text=" ("/>
+                                    <Run Text="{Binding EscalaMmPorPixel, StringFormat={}{0:0.####}}"/>
+                                    <Run Text=" mm/px)"/>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Content="↺" Command="{Binding RefrescarCatalogoCommand}"
+                            Padding="4,1" Margin="4,0,0,0" ToolTip="Recargar catálogo desde disco."/>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1">
+                <TextBlock Text="Medidas (preview)" FontWeight="Bold"/>
+                <TextBlock Text="{Binding MedidasPreview}" FontFamily="Consolas" FontSize="12"/>
+                <TextBlock Text="{Binding Estado}" Foreground="#0A5" TextWrapping="Wrap" Margin="0,4,0,0"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

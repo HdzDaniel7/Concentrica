@@ -8,6 +8,7 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="Dirkster.AvalonDock" Version="4.74.1" />
     <PackageReference Include="HelixToolkit.Wpf" Version="3.1.2" />
+    <!-- QuestPDF llega transitivamente desde Soldadura.Core (reporte en Core/Persistencia). -->
   </ItemGroup>
 
   <PropertyGroup>
@@ -16,6 +17,14 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AssemblyName>SoldaduraAnalyzer</AssemblyName>
+    <Product>Analizador de concentricidad de soldadura</Product>
+    <Description>Evalúa centrado/concentricidad y penetración de soldaduras láser contra una norma, recomienda el ajuste del robot (X/Y/Z) y marca lo fuera de especificación en 3D.</Description>
+    <Version>0.1.0</Version>
+    <Company>Soldadura Analyzer</Company>
   </PropertyGroup>
 
 </Project>

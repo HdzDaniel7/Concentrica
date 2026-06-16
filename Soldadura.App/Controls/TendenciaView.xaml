@@ -1,0 +1,53 @@
+<UserControl x:Class="Soldadura.App.Controls.TendenciaView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <DockPanel Margin="6,4,6,4">
+
+        <!-- Botón de análisis + estado -->
+        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+            <Button Content="Analizar tendencia de runout"
+                    Command="{Binding AnalizarTendenciaCommand}"
+                    Padding="8,3" FontWeight="Bold"/>
+            <TextBlock Text="{Binding Estado}" Foreground="#444" FontSize="11"
+                       TextWrapping="Wrap" Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Tabla de puntos (abajo) -->
+        <DataGrid DockPanel.Dock="Bottom" MaxHeight="150"
+                  ItemsSource="{Binding Puntos}"
+                  AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                  Margin="0,6,0,0" FontSize="11">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Puesta"
+                                    Binding="{Binding NumeroPuesta}" Width="55"/>
+                <DataGridTextColumn Header="Fecha"
+                                    Binding="{Binding Fecha, StringFormat=yyyy-MM-dd}" Width="85"/>
+                <DataGridTextColumn Header="Runout (mm)"
+                                    Binding="{Binding Runout, StringFormat=N3}" Width="82"/>
+                <DataGridTextColumn Header="Descentrado (mm)"
+                                    Binding="{Binding Descentrado, StringFormat=N3}" Width="100"/>
+                <DataGridTextColumn Header="Fracc. corr."
+                                    Binding="{Binding FraccionCorregible, StringFormat=P0}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Centro: resumen + gráfica -->
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="{Binding Resumen}"
+                       TextWrapping="Wrap" Margin="0,0,0,6"
+                       FontStyle="Italic" Foreground="#333" FontSize="11"/>
+
+            <Border Grid.Row="1" BorderBrush="#CCC" BorderThickness="1" Margin="2">
+                <Canvas x:Name="grafico" Background="White"
+                        SizeChanged="OnGraficoSizeChanged"/>
+            </Border>
+        </Grid>
+
+    </DockPanel>
+</UserControl>

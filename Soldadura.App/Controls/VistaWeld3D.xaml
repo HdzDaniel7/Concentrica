@@ -1,0 +1,96 @@
+<UserControl x:Class="Soldadura.App.Controls.VistaWeld3D"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:helix="http://helix-toolkit.org/wpf"
+             xmlns:visor3d="clr-namespace:Soldadura.App.Visor3D">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <!-- Pinceles derivados de Visor3DColores para que la leyenda comparta la paleta -->
+        <SolidColorBrush x:Key="PincelPasa"          Color="{x:Static visor3d:Visor3DColores.Pasa}"/>
+        <SolidColorBrush x:Key="PincelRevisar"       Color="{x:Static visor3d:Visor3DColores.Revisar}"/>
+        <SolidColorBrush x:Key="PincelNoPasa"         Color="{x:Static visor3d:Visor3DColores.NoPasa}"/>
+        <SolidColorBrush x:Key="PincelAnilloRef"      Color="{x:Static visor3d:Visor3DColores.AnilloRef}"/>
+        <SolidColorBrush x:Key="PincelCoronaNeutral"  Color="{x:Static visor3d:Visor3DColores.CoronaNeutral}"/>
+        <SolidColorBrush x:Key="PincelSuperficie"     Color="{x:Static visor3d:Visor3DColores.Superficie}"/>
+        <SolidColorBrush x:Key="PincelCentroIdeal"    Color="{x:Static visor3d:Visor3DColores.CentroIdeal}"/>
+        <SolidColorBrush x:Key="PincelCentroReal"     Color="{x:Static visor3d:Visor3DColores.CentroReal}"/>
+        <SolidColorBrush x:Key="PincelVectorAjuste"   Color="{x:Static visor3d:Visor3DColores.VectorAjuste}"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.Background>
+            <SolidColorBrush Color="{x:Static visor3d:Visor3DColores.Fondo}"/>
+        </Grid.Background>
+
+        <helix:HelixViewport3D x:Name="viewport"
+                               ShowCoordinateSystem="True"
+                               CoordinateSystemLabelForeground="LightGray"
+                               ZoomAroundMouseDownPoint="True"
+                               IsHeadLightEnabled="False">
+            <ModelVisual3D Content="{Binding Modelo}"/>
+        </helix:HelixViewport3D>
+
+        <!-- Etiquetas 2D proyectadas desde puntos 3D (reposicionadas por el code-behind) -->
+        <Canvas x:Name="labelCanvas" IsHitTestVisible="False"/>
+
+        <!-- Leyenda (visible cuando hay datos) -->
+        <Border HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                Margin="8" Padding="8,6" Background="#99000020" CornerRadius="4"
+                Visibility="{Binding HayDatos, Converter={StaticResource BoolToVis}}">
+            <StackPanel>
+                <TextBlock Text="Semáforo (penetración)" Foreground="White"
+                           FontSize="11" FontWeight="Bold" Margin="0,0,0,4"/>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="10" Height="10" Fill="{StaticResource PincelPasa}" Margin="0,0,5,0"/>
+                    <TextBlock Text="Nugget dentro de tolerancia" Foreground="White" FontSize="11"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Ellipse Width="10" Height="10" Fill="{StaticResource PincelRevisar}" Margin="0,0,5,0"/>
+                    <TextBlock Text="Nugget en zona de revisión (>75 %)" Foreground="White" FontSize="11"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="10" Height="10" Fill="{StaticResource PincelNoPasa}" Margin="0,0,5,0"/>
+                    <TextBlock Text="Nugget fuera de tolerancia" Foreground="White" FontSize="11"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Ellipse Width="10" Height="10" Fill="{StaticResource PincelCoronaNeutral}" Margin="0,0,5,0"/>
+                    <TextBlock Text="Cúpula de corona (exceso, brillante)" Foreground="White" FontSize="11"/>
+                </StackPanel>
+                <Separator Margin="0,4" Background="#44FFFFFF"/>
+                <TextBlock Text="Geometría de referencia" Foreground="White"
+                           FontSize="11" FontWeight="Bold" Margin="0,0,0,4"/>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="10" Height="10" Fill="{StaticResource PincelAnilloRef}"
+                             Margin="0,0,5,0" Stroke="White" StrokeThickness="0.5"/>
+                    <TextBlock Text="Anillo radio objetivo / plano profundidad objetivo" Foreground="White" FontSize="11"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Rectangle Width="10" Height="4" Fill="{StaticResource PincelSuperficie}" Margin="0,0,5,0" Opacity="0.6"/>
+                    <TextBlock Text="Plano de superficie translúcido (z=0)" Foreground="White" FontSize="11"/>
+                </StackPanel>
+                <Separator Margin="0,4" Background="#44FFFFFF"/>
+                <TextBlock Text="Concentricidad" Foreground="White"
+                           FontSize="11" FontWeight="Bold" Margin="0,0,0,4"/>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Ellipse Width="10" Height="10" Fill="{StaticResource PincelCentroIdeal}" Margin="0,0,5,0"/>
+                    <TextBlock Text="Centro ideal (origen)" Foreground="White" FontSize="11"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Ellipse Width="10" Height="10" Fill="{StaticResource PincelCentroReal}" Margin="0,0,5,0"/>
+                    <TextBlock Text="Centro real medido" Foreground="White" FontSize="11"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="10" Height="10" Fill="{StaticResource PincelVectorAjuste}" Margin="0,0,5,0"/>
+                    <TextBlock Text="Vector ajuste X/Y" Foreground="White" FontSize="11"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Mensaje de estado cuando no hay datos -->
+        <TextBlock Text="{Binding MensajeEstado}"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Foreground="#AAFFFFFF" FontSize="14"
+                   Visibility="{Binding HayMensaje, Converter={StaticResource BoolToVis}}"/>
+    </Grid>
+</UserControl>

@@ -1,0 +1,48 @@
+{
+  "id": "ISO 13919-1",
+  "edicion": "2019",
+  "fechaSello": "2026-06-14T00:00:00",
+  "verificada": false,
+  "reglas": [
+    {
+      "defecto": "Desviacion de penetracion",
+      "medida": "Profundidad",
+      "nivel": "B",
+      "tipoLimite": "Maximo",
+      "referencia": "DesviacionDeObjetivo",
+      "limite": { "offset": 0.0, "coefEspesor": 0.1, "min": 0.1, "max": 0.5 },
+      "margenRevision": 0.05,
+      "etiquetaCaso": "Penetracion dentro de tolerancia"
+    },
+    {
+      "defecto": "Concentricidad (descentrado)",
+      "medida": "Descentrado",
+      "nivel": "B",
+      "tipoLimite": "Maximo",
+      "referencia": "Absoluto",
+      "limite": { "offset": 0.0, "coefEspesor": 0.1, "min": 0.05, "max": 0.3 },
+      "margenRevision": 0.03,
+      "etiquetaCaso": "Centrado del cordon"
+    },
+    {
+      "defecto": "Runout radial total",
+      "medida": "Runout",
+      "nivel": "B",
+      "tipoLimite": "Maximo",
+      "referencia": "Absoluto",
+      "limite": { "offset": 0.0, "coefEspesor": 0.15, "min": 0.1, "max": 0.5 },
+      "margenRevision": 0.05,
+      "etiquetaCaso": "Variacion total radial"
+    },
+    {
+      "defecto": "Desviacion de ancho de cordon",
+      "medida": "AnchoCordon",
+      "nivel": "B",
+      "tipoLimite": "Maximo",
+      "referencia": "DesviacionDeObjetivo",
+      "limite": { "offset": 0.0, "coefEspesor": 0.15, "min": 0.1, "max": 0.6 },
+      "margenRevision": 0.05,
+      "etiquetaCaso": "Ancho de cordon"
+    }
+  ]
+}

@@ -1,12 +1,812 @@
-﻿<Window x:Class="Soldadura.App.MainWindow"
+<Window x:Class="Soldadura.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Soldadura.App"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:modelo="clr-namespace:Soldadura.Core.Modelo;assembly=Soldadura.Core"
+        xmlns:conv="clr-namespace:Soldadura.App.Converters"
+        xmlns:controls="clr-namespace:Soldadura.App.Controls"
+        xmlns:avd="https://github.com/Dirkster99/AvalonDock"
+        Title="Analizador de concentricidad de soldadura"
+        Height="740" Width="1280" MinHeight="600" MinWidth="900"
+        Background="{DynamicResource PincelFondoVentana}"
+        Foreground="{DynamicResource PincelTextoPrimario}">
+
+    <Window.Resources>
+        <!-- ── Convertidores ──────────────────────────────────────────────────── -->
+        <conv:DoubleFlexibleConverter x:Key="Dbl"/>
+        <conv:NullableDoubleConverter x:Key="DblNull"/>
+        <conv:ModeloReferenciaConverter x:Key="ModeloRef"/>
+
+        <!-- Fuentes de enumeraciones para ComboBox -->
+        <ObjectDataProvider x:Key="Calidades" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="modelo:CalidadMedicion"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="Tipos" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="modelo:TipoSoldadura"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="Modelos" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="modelo:ModeloReferencia"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <!-- ── Estilos del formulario ────────────────────────────────────────── -->
+
+        <!-- Etiqueta pequeña sobre cada campo -->
+        <Style TargetType="TextBlock" x:Key="Lbl">
+            <Setter Property="FontSize"   Value="11"/>
+            <Setter Property="Foreground" Value="{DynamicResource PincelTextoSecundario}"/>
+            <Setter Property="Margin"     Value="0,5,0,1"/>
+        </Style>
+
+        <!-- TextBox de formulario (keyed para no interferir con AvalonDock) -->
+        <Style TargetType="TextBox" x:Key="Campo">
+            <Setter Property="Padding"          Value="5,3"/>
+            <Setter Property="Margin"           Value="0,0,0,0"/>
+            <Setter Property="BorderBrush"      Value="{DynamicResource PincelBorde}"/>
+            <Setter Property="BorderThickness"  Value="1"/>
+            <Setter Property="Background"       Value="{DynamicResource PincelFondoControl}"/>
+            <Setter Property="Foreground"       Value="{DynamicResource PincelTextoPrimario}"/>
+            <Setter Property="CaretBrush"       Value="{DynamicResource PincelTextoPrimario}"/>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush"     Value="{DynamicResource PincelBordeFoco}"/>
+                    <Setter Property="BorderThickness" Value="1.5"/>
+                </Trigger>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="BorderBrush"     Value="{DynamicResource PincelBordeError}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="ToolTip">
+                        <Setter.Value>
+                            <Binding Path="(Validation.Errors)[0].ErrorContent"
+                                     RelativeSource="{RelativeSource Self}"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="{DynamicResource PincelFondoLectura}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource PincelTextoDesactivado}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- TextBox de solo lectura (resultados, rutas…) -->
+        <Style TargetType="TextBox" x:Key="CampoLectura" BasedOn="{StaticResource Campo}">
+            <Setter Property="Background" Value="{DynamicResource PincelFondoLectura}"/>
+            <Setter Property="Foreground" Value="{DynamicResource PincelTextoLectura}"/>
+        </Style>
+
+        <!-- Separador de sección -->
+        <Style TargetType="Separator" x:Key="Sep">
+            <Setter Property="Background" Value="{DynamicResource PincelSeparador}"/>
+            <Setter Property="Margin"     Value="0,6,0,6"/>
+            <Setter Property="Height"     Value="1"/>
+        </Style>
+
+    </Window.Resources>
+
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+    <avd:DockingManager x:Name="dockManager" Grid.Row="0">
+        <avd:DockingManager.Layout>
+            <avd:LayoutRoot>
+                <avd:LayoutPanel Orientation="Horizontal">
+
+                    <!-- ═══════════════════════════════════════════════════════════
+                         IZQUIERDA: formulario del estudio + historial  (340 px)
+                    ═══════════════════════════════════════════════════════════ -->
+                    <avd:LayoutAnchorablePane DockWidth="340">
+
+                        <!-- Panel: Estudio / Objetivo / Especificaciones -->
+                        <avd:LayoutAnchorable Title="Estudio · Objetivo · Especificaciones"
+                                              CanClose="False" CanHide="False" IsSelected="True">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled">
+                                <StackPanel Margin="8,6,10,10">
+
+                                    <!-- ── PERFIL DE SOLDADURA ──────────────────────────────────── -->
+                                    <GroupBox Header="Perfil de soldadura">
+                                        <StackPanel>
+                                            <TextBlock Text="Plantilla disponible" Style="{StaticResource Lbl}"/>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="68"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ComboBox Grid.Column="0"
+                                                          ItemsSource="{Binding PerfilesDisponibles}"
+                                                          SelectedItem="{Binding PerfilSeleccionado}"
+                                                          ToolTip="Plantillas guardadas en la carpeta raíz"/>
+                                                <StackPanel Grid.Column="2">
+                                                    <Button Content="Cargar"
+                                                            Command="{Binding CargarPerfilCommand}"
+                                                            Padding="4,3" HorizontalAlignment="Stretch"
+                                                            ToolTip="Aplica el objetivo y las tolerancias de la plantilla seleccionada"/>
+                                                    <Button Content="Eliminar"
+                                                            Command="{Binding EliminarPerfilCommand}"
+                                                            Padding="4,3" HorizontalAlignment="Stretch"
+                                                            Margin="0,2,0,0"
+                                                            ToolTip="Elimina la plantilla seleccionada (pide confirmación)"/>
+                                                </StackPanel>
+                                            </Grid>
+                                            <TextBlock Text="Guardar configuración actual como plantilla"
+                                                       Style="{StaticResource Lbl}"/>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="68"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBox Grid.Column="0"
+                                                         Text="{Binding NombrePerfil, UpdateSourceTrigger=PropertyChanged}"
+                                                         Style="{StaticResource Campo}"
+                                                         ToolTip="Nombre de la plantilla a guardar"/>
+                                                <Button Grid.Column="2" Content="Guardar"
+                                                        Command="{Binding GuardarPerfilCommand}"
+                                                        Padding="4,3" VerticalAlignment="Stretch"
+                                                        HorizontalAlignment="Stretch"
+                                                        ToolTip="Guarda el tipo, objetivo y tolerancias actuales como plantilla reutilizable"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </GroupBox>
+
+                                    <!-- ── ESTUDIO ─────────────────────────────────────────────── -->
+                                    <GroupBox Header="Estudio">
+                                        <StackPanel>
+                                            <!-- IdPieza | Nro puesta -->
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="72"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="Id de pieza" Style="{StaticResource Lbl}"/>
+                                                    <TextBox Text="{Binding IdPieza, UpdateSourceTrigger=PropertyChanged}"
+                                                             Style="{StaticResource Campo}"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2">
+                                                    <TextBlock Text="Puesta #" Style="{StaticResource Lbl}"/>
+                                                    <TextBox Text="{Binding NumeroPuesta, UpdateSourceTrigger=PropertyChanged}"
+                                                             Style="{StaticResource Campo}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                            <!-- Fecha | Zona de pieza -->
+                                            <Grid Margin="0,2,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="Fecha" Style="{StaticResource Lbl}"/>
+                                                    <DatePicker SelectedDate="{Binding Fecha}" Margin="0,0,0,2"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2">
+                                                    <TextBlock Text="Zona de pieza" Style="{StaticResource Lbl}"/>
+                                                    <TextBox Text="{Binding ZonaPieza, UpdateSourceTrigger=PropertyChanged}"
+                                                             Style="{StaticResource Campo}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </StackPanel>
+                                    </GroupBox>
+
+                                    <!-- ── OBJETIVO ───────────────────────────────────────────── -->
+                                    <GroupBox Header="Objetivo">
+                                        <StackPanel>
+                                            <TextBlock Text="Tipo de soldadura" Style="{StaticResource Lbl}"/>
+                                            <ComboBox ItemsSource="{Binding Source={StaticResource Tipos}}"
+                                                      SelectedItem="{Binding Tipo}" Margin="0,0,0,4"/>
+                                            <TextBlock Text="Modelo de referencia" Style="{StaticResource Lbl}"
+                                                       ToolTip="Cómo se toman las medidas crudas de cada muestra (ver botón «Ver modelos de referencia…»)"/>
+                                            <ComboBox ItemsSource="{Binding Source={StaticResource Modelos}}"
+                                                      SelectedItem="{Binding ModeloReferencia}" Margin="0,0,0,4">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Converter={StaticResource ModeloRef}}"/>
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                            <!-- Profundidad objetivo | Espesor -->
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="Prof. objetivo (mm)" Style="{StaticResource Lbl}"/>
+                                                    <TextBox Style="{StaticResource Campo}">
+                                                        <TextBox.Text>
+                                                            <Binding Path="ProfundidadObjetivo"
+                                                                     Converter="{StaticResource Dbl}"
+                                                                     UpdateSourceTrigger="LostFocus">
+                                                                <Binding.ValidationRules>
+                                                                    <conv:PositiveDoubleRule/>
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
+                                                    </TextBox>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2">
+                                                    <TextBlock Text="Espesor t (mm)" Style="{StaticResource Lbl}"/>
+                                                    <TextBox Style="{StaticResource Campo}">
+                                                        <TextBox.Text>
+                                                            <Binding Path="Espesor"
+                                                                     Converter="{StaticResource Dbl}"
+                                                                     UpdateSourceTrigger="LostFocus">
+                                                                <Binding.ValidationRules>
+                                                                    <conv:PositiveDoubleRule/>
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
+                                                    </TextBox>
+                                                </StackPanel>
+                                            </Grid>
+                                            <CheckBox Content="Tiene marca de 0°"
+                                                      IsChecked="{Binding TieneMarcaCero}"
+                                                      Margin="0,8,0,6"/>
+
+                                            <!-- Ejes del robot -->
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="Eje X robot" Style="{StaticResource Lbl}"
+                                                               ToolTip="Nombre del eje del robot para ajuste lateral principal"/>
+                                                    <TextBox Text="{Binding NombreEjeX, UpdateSourceTrigger=PropertyChanged}"
+                                                             Style="{StaticResource Campo}"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2">
+                                                    <TextBlock Text="Eje Y robot" Style="{StaticResource Lbl}"
+                                                               ToolTip="Nombre del eje del robot para ajuste lateral perpendicular"/>
+                                                    <TextBox Text="{Binding NombreEjeY, UpdateSourceTrigger=PropertyChanged}"
+                                                             Style="{StaticResource Campo}"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="4">
+                                                    <TextBlock Text="Eje Z robot" Style="{StaticResource Lbl}"
+                                                               ToolTip="Nombre del eje del robot para ajuste de foco/penetración"/>
+                                                    <TextBox Text="{Binding NombreEjeZ, UpdateSourceTrigger=PropertyChanged}"
+                                                             Style="{StaticResource Campo}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                <Button Content="Ver diagrama de ejes…"
+                                                        Command="{Binding VerDiagramaEjesCommand}"
+                                                        Padding="8,3"
+                                                        ToolTip="Muestra el esquema del setup láser con los ejes configurados"/>
+                                                <Button Content="Ver modelos de referencia…"
+                                                        Command="{Binding VerModelosReferenciaCommand}"
+                                                        Padding="8,3" Margin="6,0,0,0"
+                                                        ToolTip="Diagramas de los 5 modelos de referencia con variables marcadas"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </GroupBox>
+
+                                    <!-- ── ESPECIFICACIONES ───────────────────────────────────── -->
+                                    <GroupBox Header="Especificaciones de aceptación">
+                                        <StackPanel>
+                                            <TextBlock Text="Criterio interno (plano / empresa), editable. Valores en mm."
+                                                       FontSize="11"
+                                                       Foreground="{DynamicResource PincelTextoDesactivado}"
+                                                       TextWrapping="Wrap" Margin="0,0,0,4"/>
+
+                                            <!-- Nombre | Fuente -->
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="Nombre / referencia" Style="{StaticResource Lbl}"/>
+                                                    <TextBox Text="{Binding EspecNombre, UpdateSourceTrigger=PropertyChanged}"
+                                                             Style="{StaticResource Campo}"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2">
+                                                    <TextBlock Text="Fuente (plano, contrato…)" Style="{StaticResource Lbl}"/>
+                                                    <TextBox Text="{Binding EspecFuente, UpdateSourceTrigger=PropertyChanged}"
+                                                             Style="{StaticResource Campo}"/>
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <!-- Penetración: mínima | máxima -->
+                                            <Grid Margin="0,2,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="Penet. mínima (mm)" Style="{StaticResource Lbl}"
+                                                               ToolTip="Piso absoluto: el corte más superficial debe alcanzar este valor"/>
+                                                    <TextBox Style="{StaticResource Campo}">
+                                                        <TextBox.Text>
+                                                            <Binding Path="ProfundidadMinima"
+                                                                     Converter="{StaticResource Dbl}"
+                                                                     UpdateSourceTrigger="LostFocus">
+                                                                <Binding.ValidationRules>
+                                                                    <conv:PositiveDoubleRule/>
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
+                                                    </TextBox>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2">
+                                                    <CheckBox Content="Penet. máxima"
+                                                              IsChecked="{Binding EvaluarProfundidadMax}"
+                                                              Margin="0,5,0,1" FontSize="11"
+                                                              ToolTip="Techo absoluto: el corte más profundo no puede superar este valor"/>
+                                                    <TextBox Style="{StaticResource Campo}"
+                                                             IsEnabled="{Binding EvaluarProfundidadMax}">
+                                                        <TextBox.Text>
+                                                            <Binding Path="ProfundidadMaxima"
+                                                                     Converter="{StaticResource Dbl}"
+                                                                     UpdateSourceTrigger="LostFocus">
+                                                                <Binding.ValidationRules>
+                                                                    <conv:PositiveDoubleRule/>
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
+                                                    </TextBox>
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <!-- Descentrado máximo | Runout máximo (una fila más abajo) -->
+                                            <Grid Margin="0,2,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="Descentrado máx." Style="{StaticResource Lbl}"/>
+                                                    <TextBox Style="{StaticResource Campo}">
+                                                        <TextBox.Text>
+                                                            <Binding Path="DescentradoMaximo"
+                                                                     Converter="{StaticResource Dbl}"
+                                                                     UpdateSourceTrigger="LostFocus">
+                                                                <Binding.ValidationRules>
+                                                                    <conv:PositiveDoubleRule/>
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
+                                                    </TextBox>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2">
+                                                    <TextBlock Text="Runout máximo" Style="{StaticResource Lbl}"/>
+                                                    <TextBox Style="{StaticResource Campo}">
+                                                        <TextBox.Text>
+                                                            <Binding Path="RunoutMaximo"
+                                                                     Converter="{StaticResource Dbl}"
+                                                                     UpdateSourceTrigger="LostFocus">
+                                                                <Binding.ValidationRules>
+                                                                    <conv:PositiveDoubleRule/>
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
+                                                    </TextBox>
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <!-- Margen de revisión -->
+                                            <Grid Margin="0,2,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="Margen revisar ±" Style="{StaticResource Lbl}"
+                                                               ToolTip="Banda alrededor de cada límite donde el veredicto es REVISAR en lugar de PASA o NO PASA"/>
+                                                    <TextBox Style="{StaticResource Campo}">
+                                                        <TextBox.Text>
+                                                            <Binding Path="MargenRevision"
+                                                                     Converter="{StaticResource Dbl}"
+                                                                     UpdateSourceTrigger="LostFocus">
+                                                                <Binding.ValidationRules>
+                                                                    <conv:PositiveDoubleRule/>
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
+                                                    </TextBox>
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <!-- Sección: ancho de cordón -->
+                                            <CheckBox Content="Evaluar ancho de cordón"
+                                                      IsChecked="{Binding EvaluarAncho}"
+                                                      Margin="0,8,0,0" FontSize="12"/>
+                                            <Grid Margin="0,2,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="Ancho objetivo (mm)" Style="{StaticResource Lbl}"/>
+                                                    <TextBox Style="{StaticResource Campo}"
+                                                             IsEnabled="{Binding EvaluarAncho}">
+                                                        <TextBox.Text>
+                                                            <Binding Path="AnchoObjetivo"
+                                                                     Converter="{StaticResource Dbl}"
+                                                                     UpdateSourceTrigger="LostFocus">
+                                                                <Binding.ValidationRules>
+                                                                    <conv:PositiveDoubleRule/>
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
+                                                    </TextBox>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2">
+                                                    <TextBlock Text="Tolerancia ancho ±" Style="{StaticResource Lbl}"/>
+                                                    <TextBox Style="{StaticResource Campo}"
+                                                             IsEnabled="{Binding EvaluarAncho}">
+                                                        <TextBox.Text>
+                                                            <Binding Path="ToleranciaAncho"
+                                                                     Converter="{StaticResource Dbl}"
+                                                                     UpdateSourceTrigger="LostFocus">
+                                                                <Binding.ValidationRules>
+                                                                    <conv:PositiveDoubleRule/>
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
+                                                    </TextBox>
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <!-- Sección: exceso de cordón -->
+                                            <CheckBox Content="Evaluar exceso de cordón"
+                                                      IsChecked="{Binding EvaluarExceso}"
+                                                      Margin="0,8,0,0" FontSize="12"/>
+                                            <TextBlock Text="Exceso máximo — peor corte (mm)"
+                                                       Style="{StaticResource Lbl}"/>
+                                            <TextBox Style="{StaticResource Campo}"
+                                                     IsEnabled="{Binding EvaluarExceso}">
+                                                <TextBox.Text>
+                                                    <Binding Path="ExcesoCordonMaximo"
+                                                             Converter="{StaticResource Dbl}"
+                                                             UpdateSourceTrigger="LostFocus">
+                                                        <Binding.ValidationRules>
+                                                            <conv:PositiveDoubleRule/>
+                                                        </Binding.ValidationRules>
+                                                    </Binding>
+                                                </TextBox.Text>
+                                            </TextBox>
+
+                                        </StackPanel>
+                                    </GroupBox>
+
+                                    <!-- Ajuste aplicado y aprendizaje del coeficiente foco↔Z -->
+                                    <GroupBox Header="Ajuste aplicado (robot) y foco↔Z">
+                                        <StackPanel>
+                                            <TextBlock Text="Registra el ajuste que se aplicó al robot para esta puesta (mm; vacío = no registrado, se admite signo). Se guarda con el estudio y permite aprender el coeficiente foco↔Z del historial de la pieza."
+                                                       FontSize="11"
+                                                       Foreground="{DynamicResource PincelTextoDesactivado}"
+                                                       TextWrapping="Wrap" Margin="0,0,0,4"/>
+
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="Aplicado X" Style="{StaticResource Lbl}"/>
+                                                    <TextBox Style="{StaticResource Campo}"
+                                                             Text="{Binding AjusteXAplicado, Converter={StaticResource DblNull}, UpdateSourceTrigger=LostFocus, TargetNullValue=''}"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2">
+                                                    <TextBlock Text="Aplicado Y" Style="{StaticResource Lbl}"/>
+                                                    <TextBox Style="{StaticResource Campo}"
+                                                             Text="{Binding AjusteYAplicado, Converter={StaticResource DblNull}, UpdateSourceTrigger=LostFocus, TargetNullValue=''}"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="4">
+                                                    <TextBlock Text="Aplicado Z" Style="{StaticResource Lbl}"
+                                                               ToolTip="Ajuste de foco/penetración aplicado: es el que se usa para aprender el coeficiente"/>
+                                                    <TextBox Style="{StaticResource Campo}"
+                                                             Text="{Binding AjusteZAplicado, Converter={StaticResource DblNull}, UpdateSourceTrigger=LostFocus, TargetNullValue=''}"/>
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <TextBlock Text="{Binding CoefFocoZTexto}"
+                                                       FontSize="11" Margin="0,6,0,2" TextWrapping="Wrap"
+                                                       Foreground="{DynamicResource PincelTextoSecundario}"/>
+                                            <Button Content="Aprender CoefFocoZ del historial"
+                                                    Command="{Binding AprenderCoefFocoZCommand}"
+                                                    HorizontalAlignment="Left" Margin="0,2,0,0"
+                                                    ToolTip="Regresa la profundidad media contra el Z aplicado en las puestas guardadas de esta pieza"/>
+                                        </StackPanel>
+                                    </GroupBox>
+
+                                </StackPanel>
+                            </ScrollViewer>
+                        </avd:LayoutAnchorable>
+
+                        <!-- Panel: Historial -->
+                        <avd:LayoutAnchorable Title="Historial" CanClose="False" CanHide="False">
+                            <DockPanel Margin="8,6,8,6">
+
+                                <!-- Cabecera: ruta + botones -->
+                                <StackPanel DockPanel.Dock="Top">
+                                    <TextBlock Text="Carpeta raíz" Style="{StaticResource Lbl}"/>
+                                    <TextBox Text="{Binding RaizHistorial}" IsReadOnly="True"
+                                             Style="{StaticResource CampoLectura}"
+                                             FontSize="11" Margin="0,0,0,4"/>
+                                    <WrapPanel Margin="0,0,0,4">
+                                        <Button Content="Elegir carpeta…"
+                                                Command="{Binding ElegirRaizCommand}"
+                                                Padding="8,3"/>
+                                        <Button Content="Refrescar"
+                                                Command="{Binding RefrescarHistorialCommand}"
+                                                Padding="8,3" Margin="6,0,0,0"/>
+                                    </WrapPanel>
+                                    <Button Content="Abrir estudio seleccionado"
+                                            Command="{Binding AbrirEstudioCommand}"
+                                            Margin="0,0,0,6" Padding="8,4"/>
+                                    <Separator Style="{StaticResource Sep}"/>
+                                </StackPanel>
+
+                                <!-- Lista de estudios -->
+                                <ListBox ItemsSource="{Binding Historial}"
+                                         SelectedItem="{Binding HistorialSeleccionado}"
+                                         BorderThickness="1">
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem">
+                                            <Setter Property="Padding" Value="6,5"/>
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock FontWeight="SemiBold">
+                                                    <Run Text="{Binding IdPieza}"/>
+                                                    <Run Text="  ·  puesta "/>
+                                                    <Run Text="{Binding NumeroPuesta}"/>
+                                                </TextBlock>
+                                                <TextBlock FontSize="11"
+                                                           Foreground="{DynamicResource PincelTextoSecundario}">
+                                                    <Run Text="{Binding Fecha, StringFormat=yyyy-MM-dd}"/>
+                                                    <Run Text="  "/>
+                                                    <Run Text="{Binding ZonaPieza}"/>
+                                                    <Run Text="  ·  "/>
+                                                    <Run Text="{Binding NumeroMuestras}"/>
+                                                    <Run Text=" muestras"/>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+
+                            </DockPanel>
+                        </avd:LayoutAnchorable>
+
+                    </avd:LayoutAnchorablePane>
+
+                    <!-- ═══════════════════════════════════════════════════════════
+                         CENTRO: documentos principales (maximizables)
+                    ═══════════════════════════════════════════════════════════ -->
+                    <avd:LayoutDocumentPane>
+
+                        <!-- Documento: Muestras (AnotaciónDirecta) -->
+                        <avd:LayoutDocument Title="Muestras" CanClose="False" IsSelected="True">
+                            <DockPanel Margin="6,4,6,4">
+
+                                <!-- Barra de acciones -->
+                                <Border DockPanel.Dock="Top"
+                                        Background="{DynamicResource PincelFondoCabecera}"
+                                        BorderBrush="{DynamicResource PincelSeparador}"
+                                        BorderThickness="0,0,0,1"
+                                        Padding="4,6" Margin="0,0,0,4">
+                                    <WrapPanel>
+                                        <TextBlock Text="Muestras" FontWeight="Bold"
+                                                   Foreground="{DynamicResource PincelTextoPrimario}"
+                                                   VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                        <Button Content="+ Agregar" Command="{Binding AgregarMuestraCommand}"
+                                                Padding="8,3"/>
+                                        <Button Content="– Quitar" Command="{Binding QuitarMuestraCommand}"
+                                                Padding="8,3" Margin="4,0,0,0"/>
+                                        <Separator Width="1" Margin="10,0"
+                                                   Background="{DynamicResource PincelBorde}"/>
+                                        <Button Content="Ejemplo ✓ pasa" Command="{Binding CargarEjemploCommand}"
+                                                Padding="8,3" Margin="0,0,4,0"/>
+                                        <Button Content="Ejemplo ✗ no pasa" Command="{Binding CargarEjemploNoPasaCommand}"
+                                                Padding="8,3"/>
+                                        <Separator Width="1" Margin="10,0"
+                                                   Background="{DynamicResource PincelBorde}"/>
+                                        <TextBlock Text="Ordenar:" VerticalAlignment="Center"
+                                                   Foreground="{DynamicResource PincelTextoSecundario}"
+                                                   Margin="0,0,6,0" FontSize="11"/>
+                                        <Button Content="por #" Command="{Binding OrdenarPorNumeroCommand}"
+                                                Padding="6,3"
+                                                ToolTip="Ordena por número de muestra (identidad)"/>
+                                        <Button Content="por Áng/Pos" Command="{Binding OrdenarPorAnguloCommand}"
+                                                Padding="6,3" Margin="4,0,0,0"
+                                                ToolTip="Ordena por ángulo o posición"/>
+                                    </WrapPanel>
+                                </Border>
+
+                                <!-- DataGrid de muestras -->
+                                <DataGrid ItemsSource="{Binding Muestras}"
+                                          SelectedItem="{Binding MuestraSeleccionada}"
+                                          AutoGenerateColumns="False" CanUserAddRows="False"
+                                          BorderThickness="1">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="#"
+                                                            Binding="{Binding NumeroMuestra}"
+                                                            Width="38" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="Áng/Pos"
+                                                            Binding="{Binding AnguloOPosicion, Converter={StaticResource Dbl}}"
+                                                            Width="65"/>
+                                        <DataGridTextColumn Header="B. cercano"
+                                                            Binding="{Binding DistanciaBordeCercano, Converter={StaticResource Dbl}}"
+                                                            Width="*"/>
+                                        <DataGridTextColumn Header="B. lejano"
+                                                            Binding="{Binding DistanciaBordeLejano, Converter={StaticResource Dbl}}"
+                                                            Width="*"/>
+                                        <DataGridTextColumn Header="Profund."
+                                                            Binding="{Binding Profundidad, Converter={StaticResource Dbl}}"
+                                                            Width="*"/>
+                                        <DataGridTextColumn Header="Exceso"
+                                                            Binding="{Binding ExcesoCordon, Converter={StaticResource Dbl}}"
+                                                            Width="60"/>
+                                        <DataGridComboBoxColumn Header="Calidad"
+                                                                SelectedItemBinding="{Binding CalidadMedicion}"
+                                                                ItemsSource="{Binding Source={StaticResource Calidades}}"
+                                                                Width="95"/>
+                                        <DataGridTextColumn Header="Ancho"
+                                                            Binding="{Binding AnchoCordon, StringFormat=N3}"
+                                                            Width="65" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="Pos. central"
+                                                            Binding="{Binding PosicionCentral, StringFormat=N3}"
+                                                            Width="75" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="Modo"
+                                                            Binding="{Binding ModoCaptura}"
+                                                            Width="105" IsReadOnly="True"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                            </DockPanel>
+                        </avd:LayoutDocument>
+
+                        <!-- Documento: Imagen / Medición en pantalla -->
+                        <avd:LayoutDocument Title="Imagen · Medición en pantalla" CanClose="False">
+                            <controls:VisorImagen DataContext="{Binding Visor}" Margin="0,4,0,0"/>
+                        </avd:LayoutDocument>
+
+                        <!-- Documento: Vista 3D -->
+                        <avd:LayoutDocument Title="Vista 3D" CanClose="False">
+                            <controls:VistaWeld3D DataContext="{Binding Visor3D}"/>
+                        </avd:LayoutDocument>
+
+                    </avd:LayoutDocumentPane>
+
+                    <!-- ═══════════════════════════════════════════════════════════
+                         DERECHA: resultados + tendencia  (380 px)
+                    ═══════════════════════════════════════════════════════════ -->
+                    <avd:LayoutAnchorablePane DockWidth="380">
+
+                        <!-- Panel: Resultados -->
+                        <avd:LayoutAnchorable Title="Resultados" CanClose="False" CanHide="False" IsSelected="True">
+                            <DockPanel Margin="8,6,8,6">
+
+                                <!-- Acciones principales -->
+                                <Border DockPanel.Dock="Top"
+                                        Background="{DynamicResource PincelFondoCabecera}"
+                                        BorderBrush="{DynamicResource PincelSeparador}"
+                                        BorderThickness="0,0,0,1"
+                                        Padding="0,0,0,8" Margin="0,0,0,6">
+                                    <StackPanel>
+                                        <!-- Analizar + Guardar -->
+                                        <WrapPanel>
+                                            <Button Content="▶  Analizar"
+                                                    Command="{Binding AnalizarCommand}"
+                                                    Padding="12,5" FontWeight="Bold"
+                                                    Background="{DynamicResource PincelPrimario}"
+                                                    Foreground="White"
+                                                    BorderBrush="{DynamicResource PincelBordeFoco}"/>
+                                            <Button Content="💾  Guardar"
+                                                    Command="{Binding GuardarCommand}"
+                                                    Padding="12,5" Margin="6,0,0,0"/>
+                                        </WrapPanel>
+                                        <!-- Exportar -->
+                                        <WrapPanel Margin="0,6,0,0">
+                                            <TextBlock Text="Exportar:" VerticalAlignment="Center"
+                                                       Foreground="{DynamicResource PincelTextoSecundario}"
+                                                       FontSize="11" Margin="0,0,6,0"/>
+                                            <Button Content="CSV" Command="{Binding ExportarCsvCommand}"
+                                                    Padding="8,3" FontSize="11"
+                                                    ToolTip="Exporta la tabla de muestras a CSV"/>
+                                            <Button Content="JSON" Command="{Binding ExportarJsonCommand}"
+                                                    Padding="8,3" Margin="4,0,0,0" FontSize="11"
+                                                    ToolTip="Exporta el estudio completo a JSON"/>
+                                            <Button Content="📄 PDF" Command="{Binding ExportarPdfCommand}"
+                                                    Padding="8,3" Margin="4,0,0,0" FontSize="11"
+                                                    FontWeight="SemiBold"
+                                                    ToolTip="Genera el reporte PDF profesional"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Badge de veredicto -->
+                                <Border DockPanel.Dock="Top"
+                                        Background="{Binding VeredictoFondo}"
+                                        CornerRadius="5" Padding="10,8"
+                                        Margin="0,0,0,8"
+                                        Visibility="{Binding HayVeredicto, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock Text="{Binding VeredictoTexto}"
+                                               FontSize="15" FontWeight="Bold"
+                                               Foreground="{Binding VeredictoTextColor}"
+                                               HorizontalAlignment="Center"/>
+                                </Border>
+
+                                <!-- Estado (mensajes del sistema) -->
+                                <TextBlock DockPanel.Dock="Bottom"
+                                           Text="{Binding Estado}"
+                                           Foreground="{DynamicResource PincelTextoEstado}"
+                                           FontSize="11"
+                                           TextWrapping="Wrap" Margin="0,4,0,0"/>
+
+                                <!-- Resultado detallado -->
+                                <TextBox Text="{Binding Resultado, Mode=OneWay}"
+                                         IsReadOnly="True"
+                                         FontFamily="Cascadia Mono, Consolas, Courier New"
+                                         FontSize="11.5"
+                                         VerticalScrollBarVisibility="Auto"
+                                         TextWrapping="Wrap"
+                                         Background="{DynamicResource PincelFondoResultado}"
+                                         Foreground="{DynamicResource PincelTextoPrimario}"
+                                         BorderBrush="{DynamicResource PincelBorde}"
+                                         BorderThickness="1"
+                                         Padding="6"/>
+                            </DockPanel>
+                        </avd:LayoutAnchorable>
+
+                        <!-- Panel: Tendencia de runout (Fase 8) -->
+                        <avd:LayoutAnchorable Title="Tendencia de runout" CanClose="False" CanHide="False">
+                            <controls:TendenciaView DataContext="{Binding Tendencia}"/>
+                        </avd:LayoutAnchorable>
+
+                    </avd:LayoutAnchorablePane>
+
+                </avd:LayoutPanel>
+            </avd:LayoutRoot>
+        </avd:DockingManager.Layout>
+    </avd:DockingManager>
+
+        <!-- ── Barra de estado ───────────────────────────────────────────── -->
+        <Border Grid.Row="1"
+                Background="{DynamicResource PincelFondoCabecera}"
+                BorderBrush="{DynamicResource PincelSeparador}"
+                BorderThickness="0,1,0,0"
+                Padding="8,3">
+            <DockPanel>
+                <Button DockPanel.Dock="Right"
+                        Content="{Binding TexToTema}"
+                        Command="{Binding CambiarTemaCommand}"
+                        Padding="10,3" MinWidth="0" FontSize="12"
+                        ToolTip="Alternar entre tema claro y oscuro"/>
+                <TextBlock Text="Analizador de concentricidad de soldadura"
+                           Foreground="{DynamicResource PincelTextoSecundario}"
+                           FontSize="11" VerticalAlignment="Center"/>
+            </DockPanel>
+        </Border>
 
     </Grid>
 </Window>

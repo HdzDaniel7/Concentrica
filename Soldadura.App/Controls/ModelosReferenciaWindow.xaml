@@ -1,0 +1,518 @@
+<Window x:Class="Soldadura.App.Controls.ModelosReferenciaWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Modelos de referencia — variables y marcas de medición"
+        Width="660" Height="500"
+        ResizeMode="CanResize" MinWidth="580" MinHeight="420"
+        Background="{DynamicResource PincelFondoVentana}"
+        Foreground="{DynamicResource PincelTextoPrimario}">
+
+    <Grid Margin="12,10,12,12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Margin="0,0,0,8" TextWrapping="Wrap" FontSize="11"
+                   Foreground="{DynamicResource PincelTextoSecundario}">
+            Referencia rápida: cómo se definen las marcas y las variables en cada modelo.
+            En <Bold>Medición en pantalla</Bold> las marcas se capturan en este orden:
+            DatumA · DatumB · BordeCercano · BordeLejano · SuperficieA · SuperficieB · Fondo · Corona (opcional).
+        </TextBlock>
+
+        <TabControl Grid.Row="1">
+
+            <!-- ═══════════════════════════════════════════════════
+                 MODELO 1 — Datum plano externo  (base)
+            ═══════════════════════════════════════════════════ -->
+            <TabItem Header="1 · Plano externo">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="6,6,6,0">
+                    <StackPanel>
+                        <Border Background="White" BorderBrush="{DynamicResource PincelBorde}"
+                                BorderThickness="1" HorizontalAlignment="Left" Margin="0,0,0,8">
+                            <Canvas Width="540" Height="195">
+
+                                <!-- Pieza izquierda -->
+                                <Rectangle Canvas.Left="0"   Canvas.Top="15" Width="165" Height="55"
+                                           Fill="#DDE5F0" Stroke="#6B7A9A" StrokeThickness="1"/>
+                                <!-- Pieza derecha -->
+                                <Rectangle Canvas.Left="375" Canvas.Top="15" Width="165" Height="55"
+                                           Fill="#DDE5F0" Stroke="#6B7A9A" StrokeThickness="1"/>
+                                <!-- Substrato inferior -->
+                                <Rectangle Canvas.Left="0"   Canvas.Top="155" Width="540" Height="35"
+                                           Fill="#C8D5E8" Stroke="#6B7A9A" StrokeThickness="1"/>
+
+                                <!-- Cordón de soldadura (trapecio) -->
+                                <Polygon Points="165,70 375,70 340,155 200,155"
+                                         Fill="#3182CE" Stroke="#2C5282" StrokeThickness="1.5"/>
+
+                                <!-- DATUM: línea exterior plana (roja, punteada) -->
+                                <Line X1="0" Y1="70" X2="540" Y2="70"
+                                      Stroke="#C53030" StrokeThickness="2" StrokeDashArray="8,5"/>
+                                <TextBlock Canvas.Left="4" Canvas.Top="52"
+                                           Text="DATUM (cara plana exterior)" FontSize="9" FontWeight="Bold"
+                                           Foreground="#C53030"/>
+
+                                <!-- DatumA -->
+                                <Ellipse Canvas.Left="47"  Canvas.Top="63" Width="14" Height="14"
+                                         Fill="#C53030" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="30" Canvas.Top="78" Text="DatumA" FontSize="8.5" Foreground="#C53030"/>
+
+                                <!-- DatumB -->
+                                <Ellipse Canvas.Left="481" Canvas.Top="63" Width="14" Height="14"
+                                         Fill="#C53030" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="460" Canvas.Top="78" Text="DatumB" FontSize="8.5" Foreground="#C53030"/>
+
+                                <!-- SuperficieA / BordeCercano -->
+                                <Ellipse Canvas.Left="158" Canvas.Top="63" Width="14" Height="14"
+                                         Fill="#276749" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="110" Canvas.Top="78" Text="SurfA / BC" FontSize="8.5" Foreground="#276749"/>
+
+                                <!-- SuperficieB / BordeLejano -->
+                                <Ellipse Canvas.Left="368" Canvas.Top="63" Width="14" Height="14"
+                                         Fill="#276749" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="372" Canvas.Top="78" Text="SurfB / BL" FontSize="8.5" Foreground="#276749"/>
+
+                                <!-- Fondo -->
+                                <Ellipse Canvas.Left="263" Canvas.Top="148" Width="14" Height="14"
+                                         Fill="#DD6B20" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="250" Canvas.Top="162" Text="Fondo" FontSize="8.5" Foreground="#DD6B20"/>
+
+                                <!-- Dimensión: anchoCordon -->
+                                <Line X1="165" Y1="88" X2="375" Y2="88" Stroke="#1A202C" StrokeThickness="1.5"/>
+                                <Polygon Points="165,88 174,84 174,92" Fill="#1A202C"/>
+                                <Polygon Points="375,88 366,84 366,92" Fill="#1A202C"/>
+                                <TextBlock Canvas.Left="242" Canvas.Top="76" Text="ancho" FontSize="9" Foreground="#1A202C"/>
+
+                                <!-- Dimensión: profundidad -->
+                                <Line X1="398" Y1="70" X2="398" Y2="155" Stroke="#1A202C" StrokeThickness="1.5"/>
+                                <Polygon Points="398,70 393,79 403,79" Fill="#1A202C"/>
+                                <Polygon Points="398,155 393,146 403,146" Fill="#1A202C"/>
+                                <TextBlock Canvas.Left="403" Canvas.Top="103" Text="prof." FontSize="9" Foreground="#1A202C"/>
+
+                                <!-- d1 indicador -->
+                                <Line X1="54" Y1="28" X2="165" Y2="28" Stroke="#805AD5" StrokeThickness="1.5" StrokeDashArray="4,3"/>
+                                <Polygon Points="165,28 156,24 156,32" Fill="#805AD5"/>
+                                <TextBlock Canvas.Left="96"  Canvas.Top="17" Text="d₁" FontSize="10" FontWeight="Bold" Foreground="#805AD5"/>
+
+                                <!-- d2 indicador -->
+                                <Line X1="54" Y1="15" X2="375" Y2="15" Stroke="#805AD5" StrokeThickness="1.5" StrokeDashArray="4,3"/>
+                                <Polygon Points="375,15 366,11 366,19" Fill="#805AD5"/>
+                                <TextBlock Canvas.Left="200" Canvas.Top="4"  Text="d₂" FontSize="10" FontWeight="Bold" Foreground="#805AD5"/>
+
+                                <!-- posición central (vertical punteada) -->
+                                <Line X1="270" Y1="70" X2="270" Y2="155" Stroke="#2B6CB0" StrokeThickness="1" StrokeDashArray="3,3"/>
+                                <TextBlock Canvas.Left="275" Canvas.Top="98" Text="pos.central" FontSize="8" Foreground="#2B6CB0"/>
+
+                            </Canvas>
+                        </Border>
+
+                        <TextBlock TextWrapping="Wrap" FontSize="11">
+                            <Run FontWeight="SemiBold">Datum:</Run><Run> cara plana exterior de la pieza (línea horizontal). </Run>
+                            <Run FontWeight="SemiBold">DatumA y DatumB</Run><Run> se marcan sobre esa cara, idealmente lejos del cordón para definir bien la línea.</Run>
+                            <LineBreak/>
+                            <Run FontWeight="SemiBold">SuperficieA = BordeCercano</Run><Run> y </Run>
+                            <Run FontWeight="SemiBold">SuperficieB = BordeLejano</Run><Run>: límites del cordón en la cara del datum.</Run>
+                            <LineBreak/>
+                            <Run FontWeight="SemiBold">Fondo:</Run><Run> punta más profunda del cordón.</Run>
+                            <LineBreak/>
+                            <Run Foreground="#805AD5" FontWeight="SemiBold">d₁</Run><Run> = distBordeCercano  </Run>
+                            <Run Foreground="#805AD5" FontWeight="SemiBold">d₂</Run><Run> = distBordeLejano  </Run>
+                            <Run FontWeight="SemiBold">ancho</Run><Run> = d₂ − d₁  </Run>
+                            <Run FontWeight="SemiBold">pos.central</Run><Run> = (d₁+d₂)/2  </Run>
+                            <Run FontWeight="SemiBold">prof.</Run><Run> = ⊥ de Fondo a línea Superficie</Run>
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ═══════════════════════════════════════════════════
+                 MODELO 2 — Radial desde centro / eje
+            ═══════════════════════════════════════════════════ -->
+            <TabItem Header="2 · Radial desde eje">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="6,6,6,0">
+                    <StackPanel>
+                        <Border Background="White" BorderBrush="{DynamicResource PincelBorde}"
+                                BorderThickness="1" HorizontalAlignment="Left" Margin="0,0,0,8">
+                            <Canvas Width="540" Height="195">
+
+                                <!-- Sección de la pared del tubo (vista lateral del corte radial) -->
+                                <!-- Pared exterior izquierda (material) -->
+                                <Rectangle Canvas.Left="0"   Canvas.Top="15" Width="155" Height="165"
+                                           Fill="#DDE5F0" Stroke="#6B7A9A" StrokeThickness="1"/>
+                                <!-- Pared exterior derecha (material) -->
+                                <Rectangle Canvas.Left="385" Canvas.Top="15" Width="155" Height="165"
+                                           Fill="#DDE5F0" Stroke="#6B7A9A" StrokeThickness="1"/>
+
+                                <!-- Cordón de soldadura centrado (trapecio) -->
+                                <Polygon Points="155,15 385,15 355,180 185,180"
+                                         Fill="#3182CE" Stroke="#2C5282" StrokeThickness="1.5"/>
+
+                                <!-- EJE / CENTRO (datum) — línea vertical punteada roja -->
+                                <Line X1="270" Y1="0" X2="270" Y2="195"
+                                      Stroke="#C53030" StrokeThickness="2" StrokeDashArray="8,5"/>
+                                <TextBlock Canvas.Left="274" Canvas.Top="5"
+                                           Text="EJE / CENTRO (datum)" FontSize="9" FontWeight="Bold" Foreground="#C53030"/>
+
+                                <!-- DatumA (marca sobre el eje, arriba) -->
+                                <Ellipse Canvas.Left="263" Canvas.Top="28" Width="14" Height="14"
+                                         Fill="#C53030" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="280" Canvas.Top="28" Text="DatumA" FontSize="8.5" Foreground="#C53030"/>
+
+                                <!-- DatumB (marca sobre el eje, abajo) -->
+                                <Ellipse Canvas.Left="263" Canvas.Top="150" Width="14" Height="14"
+                                         Fill="#C53030" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="280" Canvas.Top="150" Text="DatumB" FontSize="8.5" Foreground="#C53030"/>
+
+                                <!-- BordeCercano (borde del cordón más cercano al eje: izquierdo) -->
+                                <Ellipse Canvas.Left="148" Canvas.Top="28" Width="14" Height="14"
+                                         Fill="#276749" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="76" Canvas.Top="28" Text="BordCercano" FontSize="8.5" Foreground="#276749"/>
+
+                                <!-- BordeLejano (borde más lejano del eje: derecho) -->
+                                <Ellipse Canvas.Left="378" Canvas.Top="28" Width="14" Height="14"
+                                         Fill="#276749" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="395" Canvas.Top="28" Text="BordLejano" FontSize="8.5" Foreground="#276749"/>
+
+                                <!-- SuperficieA (mismo punto que BordeCercano en este plano) -->
+                                <Ellipse Canvas.Left="148" Canvas.Top="48" Width="10" Height="10"
+                                         Fill="#38A169" Stroke="White" StrokeThickness="1"/>
+                                <TextBlock Canvas.Left="76" Canvas.Top="48" Text="SuperfA" FontSize="8" Foreground="#38A169"/>
+
+                                <!-- SuperficieB -->
+                                <Ellipse Canvas.Left="382" Canvas.Top="48" Width="10" Height="10"
+                                         Fill="#38A169" Stroke="White" StrokeThickness="1"/>
+                                <TextBlock Canvas.Left="395" Canvas.Top="48" Text="SuperfB" FontSize="8" Foreground="#38A169"/>
+
+                                <!-- Fondo -->
+                                <Ellipse Canvas.Left="263" Canvas.Top="173" Width="14" Height="14"
+                                         Fill="#DD6B20" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="280" Canvas.Top="173" Text="Fondo" FontSize="8.5" Foreground="#DD6B20"/>
+
+                                <!-- d₁: del eje al borde cercano (izquierdo) -->
+                                <Line X1="270" Y1="98" X2="155" Y2="98" Stroke="#805AD5" StrokeThickness="1.5" StrokeDashArray="4,3"/>
+                                <Polygon Points="155,98 164,94 164,102" Fill="#805AD5"/>
+                                <TextBlock Canvas.Left="196" Canvas.Top="86" Text="d₁" FontSize="10" FontWeight="Bold" Foreground="#805AD5"/>
+
+                                <!-- d₂: del eje al borde lejano (derecho) -->
+                                <Line X1="270" Y1="112" X2="385" Y2="112" Stroke="#805AD5" StrokeThickness="1.5" StrokeDashArray="4,3"/>
+                                <Polygon Points="385,112 376,108 376,116" Fill="#805AD5"/>
+                                <TextBlock Canvas.Left="318" Canvas.Top="100" Text="d₂" FontSize="10" FontWeight="Bold" Foreground="#805AD5"/>
+
+                                <!-- profundidad -->
+                                <Line X1="418" Y1="15" X2="418" Y2="180" Stroke="#1A202C" StrokeThickness="1.5"/>
+                                <Polygon Points="418,15 413,24 423,24" Fill="#1A202C"/>
+                                <Polygon Points="418,180 413,171 423,171" Fill="#1A202C"/>
+                                <TextBlock Canvas.Left="423" Canvas.Top="90" Text="prof." FontSize="9" Foreground="#1A202C"/>
+
+                                <!-- ancho -->
+                                <Line X1="155" Y1="130" X2="385" Y2="130" Stroke="#1A202C" StrokeThickness="1.5"/>
+                                <Polygon Points="155,130 164,126 164,134" Fill="#1A202C"/>
+                                <Polygon Points="385,130 376,126 376,134" Fill="#1A202C"/>
+                                <TextBlock Canvas.Left="243" Canvas.Top="133" Text="ancho" FontSize="9" Foreground="#1A202C"/>
+
+                            </Canvas>
+                        </Border>
+
+                        <TextBlock TextWrapping="Wrap" FontSize="11">
+                            <Run FontWeight="SemiBold">Datum:</Run><Run> eje o centro de la pieza cilíndrica. DatumA y DatumB se marcan sobre la línea de eje (o sobre features coincidentes con el eje).</Run>
+                            <LineBreak/>
+                            <Run FontWeight="SemiBold">BordeCercano:</Run><Run> borde del cordón más cercano al eje (menor radio).  </Run>
+                            <Run FontWeight="SemiBold">BordeLejano:</Run><Run> borde más alejado (mayor radio).</Run>
+                            <LineBreak/>
+                            <Run Foreground="#805AD5" FontWeight="SemiBold">d₁</Run><Run> = radio al borde cercano  </Run>
+                            <Run Foreground="#805AD5" FontWeight="SemiBold">d₂</Run><Run> = radio al borde lejano  </Run>
+                            <Run FontWeight="SemiBold">radioLineaCentral</Run><Run> = posiciónCentral = (d₁+d₂)/2</Run>
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ═══════════════════════════════════════════════════
+                 MODELO 3 — Dos features / línea base
+            ═══════════════════════════════════════════════════ -->
+            <TabItem Header="3 · Dos features">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="6,6,6,0">
+                    <StackPanel>
+                        <Border Background="White" BorderBrush="{DynamicResource PincelBorde}"
+                                BorderThickness="1" HorizontalAlignment="Left" Margin="0,0,0,8">
+                            <Canvas Width="540" Height="195">
+
+                                <!-- Material (pieza completa) -->
+                                <Rectangle Canvas.Left="0" Canvas.Top="15" Width="540" Height="55"
+                                           Fill="#DDE5F0" Stroke="#6B7A9A" StrokeThickness="1"/>
+                                <!-- Substrato -->
+                                <Rectangle Canvas.Left="0" Canvas.Top="155" Width="540" Height="35"
+                                           Fill="#C8D5E8" Stroke="#6B7A9A" StrokeThickness="1"/>
+
+                                <!-- Cordón de soldadura -->
+                                <Polygon Points="200,70 340,70 315,155 225,155"
+                                         Fill="#3182CE" Stroke="#2C5282" StrokeThickness="1.5"/>
+
+                                <!-- Feature A (agujero/saliente izquierdo = DatumA) -->
+                                <Ellipse Canvas.Left="40" Canvas.Top="25" Width="30" Height="30"
+                                         Fill="White" Stroke="#C53030" StrokeThickness="2.5"/>
+                                <Ellipse Canvas.Left="50" Canvas.Top="35" Width="10" Height="10"
+                                         Fill="#C53030"/>
+                                <TextBlock Canvas.Left="22" Canvas.Top="57" Text="DatumA" FontSize="8.5" Foreground="#C53030"/>
+
+                                <!-- Feature B (agujero/saliente derecho = DatumB) -->
+                                <Ellipse Canvas.Left="470" Canvas.Top="25" Width="30" Height="30"
+                                         Fill="White" Stroke="#C53030" StrokeThickness="2.5"/>
+                                <Ellipse Canvas.Left="480" Canvas.Top="35" Width="10" Height="10"
+                                         Fill="#C53030"/>
+                                <TextBlock Canvas.Left="452" Canvas.Top="57" Text="DatumB" FontSize="8.5" Foreground="#C53030"/>
+
+                                <!-- Línea base entre features (datum) -->
+                                <Line X1="55" Y1="40" X2="485" Y2="40"
+                                      Stroke="#C53030" StrokeThickness="1.5" StrokeDashArray="6,4"/>
+                                <TextBlock Canvas.Left="200" Canvas.Top="24"
+                                           Text="LÍNEA BASE (datum)" FontSize="9" FontWeight="Bold" Foreground="#C53030"/>
+
+                                <!-- BordeCercano -->
+                                <Ellipse Canvas.Left="193" Canvas.Top="63" Width="14" Height="14"
+                                         Fill="#276749" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="130" Canvas.Top="78" Text="SurfA / BC" FontSize="8.5" Foreground="#276749"/>
+
+                                <!-- BordeLejano -->
+                                <Ellipse Canvas.Left="333" Canvas.Top="63" Width="14" Height="14"
+                                         Fill="#276749" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="348" Canvas.Top="78" Text="SurfB / BL" FontSize="8.5" Foreground="#276749"/>
+
+                                <!-- Fondo -->
+                                <Ellipse Canvas.Left="263" Canvas.Top="148" Width="14" Height="14"
+                                         Fill="#DD6B20" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="250" Canvas.Top="162" Text="Fondo" FontSize="8.5" Foreground="#DD6B20"/>
+
+                                <!-- SuperficieA / SuperficieB (sobre la superficie real, coinciden con la línea base) -->
+                                <!-- en este modelo la Sup. puede coincidir con el datum o estar un poco abajo -->
+
+                                <!-- d₁: de línea base a borde cercano (vertical) -->
+                                <Line X1="172" Y1="40" X2="172" Y2="70" Stroke="#805AD5" StrokeThickness="1.5" StrokeDashArray="4,3"/>
+                                <Polygon Points="172,70 168,61 176,61" Fill="#805AD5"/>
+                                <TextBlock Canvas.Left="145" Canvas.Top="50" Text="d₁" FontSize="10" FontWeight="Bold" Foreground="#805AD5"/>
+
+                                <!-- d₂ (en este modelo puede ser diferente, pero usamos la misma lógica) -->
+                                <!-- ancho -->
+                                <Line X1="200" Y1="88" X2="340" Y2="88" Stroke="#1A202C" StrokeThickness="1.5"/>
+                                <Polygon Points="200,88 209,84 209,92" Fill="#1A202C"/>
+                                <Polygon Points="340,88 331,84 331,92" Fill="#1A202C"/>
+                                <TextBlock Canvas.Left="250" Canvas.Top="77" Text="ancho" FontSize="9" Foreground="#1A202C"/>
+
+                                <!-- profundidad -->
+                                <Line X1="370" Y1="70" X2="370" Y2="155" Stroke="#1A202C" StrokeThickness="1.5"/>
+                                <Polygon Points="370,70 365,79 375,79" Fill="#1A202C"/>
+                                <Polygon Points="370,155 365,146 375,146" Fill="#1A202C"/>
+                                <TextBlock Canvas.Left="375" Canvas.Top="104" Text="prof." FontSize="9" Foreground="#1A202C"/>
+
+                            </Canvas>
+                        </Border>
+
+                        <TextBlock TextWrapping="Wrap" FontSize="11">
+                            <Run FontWeight="SemiBold">Datum:</Run><Run> línea recta definida por dos features de referencia (agujeros, pines, bordes maquinados) alejados del cordón.</Run>
+                            <LineBreak/>
+                            <Run FontWeight="SemiBold">DatumA y DatumB</Run><Run> se marcan sobre los centros (o bordes) de dichas features. La línea base resultante es el datum de posición.</Run>
+                            <LineBreak/>
+                            <Run FontWeight="SemiBold">d₁</Run><Run> = distancia perpendicular de la línea base al BordeCercano del cordón.  </Run>
+                            <Run FontWeight="SemiBold">d₂</Run><Run> al BordeLejano. Util cuando la superficie exterior del cordón no es accesible o no es plana.</Run>
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ═══════════════════════════════════════════════════
+                 MODELO 4 — Contorno de pieza
+            ═══════════════════════════════════════════════════ -->
+            <TabItem Header="4 · Contorno de pieza">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="6,6,6,0">
+                    <StackPanel>
+                        <Border Background="White" BorderBrush="{DynamicResource PincelBorde}"
+                                BorderThickness="1" HorizontalAlignment="Left" Margin="0,0,0,8">
+                            <Canvas Width="540" Height="195">
+
+                                <!-- Material con superficie curvada (Path) -->
+                                <Path Fill="#DDE5F0" Stroke="#6B7A9A" StrokeThickness="1">
+                                    <Path.Data>
+                                        <PathGeometry>
+                                            <PathFigure StartPoint="0,15" IsClosed="True">
+                                                <BezierSegment Point1="135,15" Point2="135,15" Point3="200,55"/>
+                                                <BezierSegment Point1="265,95" Point2="265,95" Point3="340,55"/>
+                                                <BezierSegment Point1="405,15" Point2="405,15" Point3="540,15"/>
+                                                <LineSegment Point="540,75"/>
+                                                <BezierSegment Point1="405,75" Point2="405,75" Point3="340,115"/>
+                                                <BezierSegment Point1="265,155" Point2="265,155" Point3="200,115"/>
+                                                <BezierSegment Point1="135,75" Point2="135,75" Point3="0,75"/>
+                                            </PathFigure>
+                                        </PathGeometry>
+                                    </Path.Data>
+                                </Path>
+
+                                <!-- Substrato -->
+                                <Rectangle Canvas.Left="0" Canvas.Top="155" Width="540" Height="35"
+                                           Fill="#C8D5E8" Stroke="#6B7A9A" StrokeThickness="1"/>
+
+                                <!-- Cordón de soldadura (en el valle de la curvatura) -->
+                                <Polygon Points="225,85 315,85 295,155 245,155"
+                                         Fill="#3182CE" Stroke="#2C5282" StrokeThickness="1.5"/>
+
+                                <!-- DatumA (punto sobre el contorno, izq) -->
+                                <Ellipse Canvas.Left="93" Canvas.Top="36" Width="14" Height="14"
+                                         Fill="#C53030" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="70" Canvas.Top="52" Text="DatumA" FontSize="8.5" Foreground="#C53030"/>
+
+                                <!-- DatumB (punto sobre el contorno, der) -->
+                                <Ellipse Canvas.Left="433" Canvas.Top="36" Width="14" Height="14"
+                                         Fill="#C53030" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="414" Canvas.Top="52" Text="DatumB" FontSize="8.5" Foreground="#C53030"/>
+
+                                <!-- Flecha normal al contorno en el punto de medición -->
+                                <Line X1="270" Y1="90" X2="270" Y2="115"
+                                      Stroke="#C53030" StrokeThickness="1.5" StrokeDashArray="4,3"/>
+                                <TextBlock Canvas.Left="276" Canvas.Top="94" Text="normal al contorno" FontSize="8" Foreground="#C53030"/>
+
+                                <!-- SuperficieA / BordeCercano -->
+                                <Ellipse Canvas.Left="218" Canvas.Top="78" Width="14" Height="14"
+                                         Fill="#276749" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="160" Canvas.Top="93" Text="SurfA / BC" FontSize="8.5" Foreground="#276749"/>
+
+                                <!-- SuperficieB / BordeLejano -->
+                                <Ellipse Canvas.Left="308" Canvas.Top="78" Width="14" Height="14"
+                                         Fill="#276749" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="325" Canvas.Top="93" Text="SurfB / BL" FontSize="8.5" Foreground="#276749"/>
+
+                                <!-- Fondo -->
+                                <Ellipse Canvas.Left="263" Canvas.Top="148" Width="14" Height="14"
+                                         Fill="#DD6B20" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="250" Canvas.Top="162" Text="Fondo" FontSize="8.5" Foreground="#DD6B20"/>
+
+                                <!-- profundidad (normal a superficie curva) -->
+                                <Line X1="400" Y1="83" X2="400" Y2="155" Stroke="#1A202C" StrokeThickness="1.5"/>
+                                <Polygon Points="400,83 395,92 405,92" Fill="#1A202C"/>
+                                <Polygon Points="400,155 395,146 405,146" Fill="#1A202C"/>
+                                <TextBlock Canvas.Left="405" Canvas.Top="110" Text="prof." FontSize="9" Foreground="#1A202C"/>
+
+                                <!-- ancho -->
+                                <Line X1="225" Y1="102" X2="315" Y2="102" Stroke="#1A202C" StrokeThickness="1.5"/>
+                                <Polygon Points="225,102 234,98 234,106" Fill="#1A202C"/>
+                                <Polygon Points="315,102 306,98 306,106" Fill="#1A202C"/>
+                                <TextBlock Canvas.Left="253" Canvas.Top="105" Text="ancho" FontSize="9" Foreground="#1A202C"/>
+
+                                <!-- Etiqueta DATUM sobre el contorno -->
+                                <TextBlock Canvas.Left="200" Canvas.Top="18"
+                                           Text="DATUM (contorno de la pieza)" FontSize="9" FontWeight="Bold" Foreground="#C53030"/>
+
+                            </Canvas>
+                        </Border>
+
+                        <TextBlock TextWrapping="Wrap" FontSize="11">
+                            <Run FontWeight="SemiBold">Datum:</Run><Run> el contorno exterior de la pieza (puede ser curvo: cilíndrico, cónico, esférico).</Run>
+                            <LineBreak/>
+                            <Run FontWeight="SemiBold">DatumA y DatumB</Run><Run> se marcan sobre la superficie curva, a ambos lados del cordón. La dirección de medición es la normal a la superficie en ese punto.</Run>
+                            <LineBreak/>
+                            <Run FontWeight="SemiBold">SuperficieA/B</Run><Run> se marcan donde el cordón aflora a la superficie curva. Útil cuando la pieza tiene geometría irregular y la dirección de penetración varía con la posición.</Run>
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ═══════════════════════════════════════════════════
+                 MODELO 5 — Solo geometría del cordón
+            ═══════════════════════════════════════════════════ -->
+            <TabItem Header="5 · Solo geometría">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="6,6,6,0">
+                    <StackPanel>
+                        <Border Background="White" BorderBrush="{DynamicResource PincelBorde}"
+                                BorderThickness="1" HorizontalAlignment="Left" Margin="0,0,0,8">
+                            <Canvas Width="540" Height="195">
+
+                                <!-- Material (pieza entera, sin recorte) -->
+                                <Rectangle Canvas.Left="0" Canvas.Top="15" Width="540" Height="55"
+                                           Fill="#DDE5F0" Stroke="#6B7A9A" StrokeThickness="1"/>
+                                <!-- Substrato -->
+                                <Rectangle Canvas.Left="0" Canvas.Top="155" Width="540" Height="35"
+                                           Fill="#C8D5E8" Stroke="#6B7A9A" StrokeThickness="1"/>
+
+                                <!-- Cordón con corona (exceso por encima de la superficie) -->
+                                <!-- Corona: semielipse por encima de y=70 -->
+                                <Path Fill="#5A9CD6" Stroke="#2C5282" StrokeThickness="1.5">
+                                    <Path.Data>
+                                        <PathGeometry>
+                                            <PathFigure StartPoint="180,70" IsClosed="True">
+                                                <BezierSegment Point1="180,30" Point2="360,30" Point3="360,70"/>
+                                            </PathFigure>
+                                        </PathGeometry>
+                                    </Path.Data>
+                                </Path>
+                                <!-- Cuerpo del cordón (trapecio) -->
+                                <Polygon Points="180,70 360,70 330,155 210,155"
+                                         Fill="#3182CE" Stroke="#2C5282" StrokeThickness="1.5"/>
+
+                                <!-- Línea de superficie (verde) -->
+                                <Line X1="0" Y1="70" X2="540" Y2="70"
+                                      Stroke="#276749" StrokeThickness="1.5" StrokeDashArray="6,4"/>
+                                <TextBlock Canvas.Left="4" Canvas.Top="55"
+                                           Text="Superficie de referencia del cordón" FontSize="9"
+                                           FontWeight="Bold" Foreground="#276749"/>
+
+                                <!-- SuperficieA -->
+                                <Ellipse Canvas.Left="173" Canvas.Top="63" Width="14" Height="14"
+                                         Fill="#276749" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="118" Canvas.Top="78" Text="SuperficieA" FontSize="8.5" Foreground="#276749"/>
+
+                                <!-- SuperficieB -->
+                                <Ellipse Canvas.Left="353" Canvas.Top="63" Width="14" Height="14"
+                                         Fill="#276749" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="370" Canvas.Top="78" Text="SuperficieB" FontSize="8.5" Foreground="#276749"/>
+
+                                <!-- Corona (punto más alto del exceso) -->
+                                <Ellipse Canvas.Left="263" Canvas.Top="41" Width="14" Height="14"
+                                         Fill="#9F7AEA" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="280" Canvas.Top="37" Text="Corona" FontSize="8.5" Foreground="#9F7AEA"/>
+
+                                <!-- Fondo -->
+                                <Ellipse Canvas.Left="263" Canvas.Top="148" Width="14" Height="14"
+                                         Fill="#DD6B20" Stroke="White" StrokeThickness="1.5"/>
+                                <TextBlock Canvas.Left="280" Canvas.Top="155" Text="Fondo" FontSize="8.5" Foreground="#DD6B20"/>
+
+                                <!-- Sin DatumA/B (no se usan en este modelo) -->
+                                <TextBlock Canvas.Left="4" Canvas.Top="17"
+                                           Text="⊘ Sin DatumA / DatumB" FontSize="9" Foreground="#A0AEC0"/>
+
+                                <!-- ancho del cordón -->
+                                <Line X1="180" Y1="88" X2="360" Y2="88" Stroke="#1A202C" StrokeThickness="1.5"/>
+                                <Polygon Points="180,88 189,84 189,92" Fill="#1A202C"/>
+                                <Polygon Points="360,88 351,84 351,92" Fill="#1A202C"/>
+                                <TextBlock Canvas.Left="248" Canvas.Top="77" Text="ancho" FontSize="9" Foreground="#1A202C"/>
+
+                                <!-- profundidad -->
+                                <Line X1="390" Y1="70" X2="390" Y2="155" Stroke="#1A202C" StrokeThickness="1.5"/>
+                                <Polygon Points="390,70 385,79 395,79" Fill="#1A202C"/>
+                                <Polygon Points="390,155 385,146 395,146" Fill="#1A202C"/>
+                                <TextBlock Canvas.Left="395" Canvas.Top="104" Text="prof." FontSize="9" Foreground="#1A202C"/>
+
+                                <!-- exceso de cordón -->
+                                <Line X1="420" Y1="48" X2="420" Y2="70" Stroke="#9F7AEA" StrokeThickness="1.5"/>
+                                <Polygon Points="420,48 415,57 425,57" Fill="#9F7AEA"/>
+                                <Polygon Points="420,70 415,61 425,61" Fill="#9F7AEA"/>
+                                <TextBlock Canvas.Left="425" Canvas.Top="52" Text="exceso" FontSize="9" Foreground="#9F7AEA"/>
+
+                            </Canvas>
+                        </Border>
+
+                        <TextBlock TextWrapping="Wrap" FontSize="11">
+                            <Run FontWeight="SemiBold">Sin datum externo.</Run><Run> Solo se caracteriza la geometría del cordón en sí mismo.</Run>
+                            <LineBreak/>
+                            <Run FontWeight="SemiBold">DatumA / DatumB no se marcan.</Run><Run> La referencia es la línea de superficie del material adyacente al cordón.</Run>
+                            <LineBreak/>
+                            <Run FontWeight="SemiBold">SuperficieA y SuperficieB:</Run><Run> donde el cordón aflora a la superficie. Fondo: punta más profunda. </Run>
+                            <Run FontWeight="SemiBold" Foreground="#9F7AEA">Corona:</Run><Run Foreground="#9F7AEA"> punto más alto de la sobreelevaciòn (exceso de cordón).</Run>
+                            <LineBreak/>
+                            <Run FontWeight="SemiBold">Medidas:</Run><Run> anchoCordon · profundidad · excesoCordon. No hay d₁/d₂ ni posiciónCentral relativa a datum.</Run>
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</Window>
