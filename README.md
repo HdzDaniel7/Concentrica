@@ -32,6 +32,7 @@ Toda la captura y la visualización ocurren dentro del programa: **no depende de
 
 ## Contenido
 
+- [Vista previa](#vista-previa)
 - [Características](#características)
 - [Stack técnico](#stack-técnico)
 - [Estructura del proyecto](#estructura-del-proyecto)
@@ -43,6 +44,22 @@ Toda la captura y la visualización ocurren dentro del programa: **no depende de
 - [Pruebas](#pruebas)
 - [Estado y hoja de ruta](#estado-y-hoja-de-ruta)
 - [Licencias de terceros](#licencias-de-terceros)
+
+---
+
+## Vista previa
+
+Reporte PDF generado por la app a partir de un estudio de ejemplo (8 cortes de una soldadura
+circular). La izquierda muestra el veredicto, las especificaciones y la **recomendación X/Y/Z**;
+la derecha, el **detalle por criterio** (con el semáforo PASA/REVISAR/NO PASA) y la tabla de muestras.
+
+<p align="center">
+  <img src="docs/img/reporte-pagina-1.png" width="420" alt="Reporte, página 1: veredicto, especificaciones y recomendación de ajuste X/Y/Z"/>
+  <img src="docs/img/reporte-pagina-2.png" width="420" alt="Reporte, página 2: detalle por criterio y tabla de muestras"/>
+</p>
+
+> Imágenes generadas con datos sintéticos; el reporte real incluye además la vista 3D y los
+> overlays de medición cuando están disponibles.
 
 ---
 
