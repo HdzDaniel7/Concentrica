@@ -87,6 +87,11 @@ la derecha, el **detalle por criterio** (con el semáforo PASA/REVISAR/NO PASA) 
 - **Exportación** a PDF (reporte completo con vista 3D y overlays incrustados), CSV y JSON.
 - **Tema claro/oscuro** conmutable en caliente.
 
+<p align="center">
+  <img src="docs/img/reporte-pagina-3.png" width="420" alt="Medición calibrada contra microscopios Nikon"/>
+  <img src="docs/img/reporte-pagina-4.png" width="420" alt="Se observa la variación que genera excentricidad contra los resultados ideales"/>
+</p>
+
 ## Stack técnico
 
 - **C# / .NET 10** (LTS) — Windows.
