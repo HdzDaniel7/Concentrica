@@ -187,6 +187,9 @@ DocProject/Help/html
 # Click-Once directory
 publish/
 
+# Ejecutable publicado copiado a la carpeta principal (ver Crear-ejecutable.bat)
+/Concentrica.exe
+
 # Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml

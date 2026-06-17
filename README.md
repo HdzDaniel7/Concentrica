@@ -12,6 +12,24 @@ Toda la captura y la visualización ocurren dentro del programa: **no depende de
 
 ---
 
+## Inicio rápido (para usar la app, sin programar)
+
+¿No programas ni usas VS Code? Tienes dos caminos:
+
+- **A) Descargar el ejecutable (lo más fácil).** Si hay una versión publicada, ve a la pestaña
+  **[Releases](https://github.com/HdzDaniel7/Concentrica/releases)** del proyecto, descarga
+  **`Concentrica.exe`** y ábrelo con doble clic. Es autónomo: **no requiere instalar nada**.
+
+- **B) Crear el ejecutable tú mismo** (si descargaste el código en ZIP). Necesitas el
+  [SDK de .NET 10](https://dotnet.microsoft.com/download/dotnet/10.0) instalado una sola vez; luego:
+  1. Doble clic en **`Crear-ejecutable.bat`** → genera `Concentrica.exe` en la carpeta principal.
+  2. Doble clic en **`Ejecutar-Concentrica.bat`** (o en `Concentrica.exe`) para abrir la app.
+
+  > `Ejecutar-Concentrica.bat` es inteligente: si encuentra el `.exe` lo abre; si no, intenta
+  > iniciar la app desde el código; y si falta todo, te dice qué hacer.
+
+---
+
 ## Contenido
 
 - [Características](#características)
