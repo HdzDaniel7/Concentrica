@@ -97,7 +97,7 @@ public static class ReportePdf
     {
         c.BorderTop(0.8f).BorderColor(GrisBorde).PaddingTop(4).Row(row =>
         {
-            row.RelativeItem().Text("Analizador de concentricidad de soldadura")
+            row.RelativeItem().Text("Concéntrica — Analizador de concentricidad de soldadura")
                 .FontSize(8).FontColor(Colors.Grey.Medium);
             row.ConstantItem(120).AlignRight().Text(t =>
             {

@@ -32,6 +32,6 @@ dotnet publish $proyecto `
     -o $Output
 
 if ($LASTEXITCODE -eq 0) {
-    $exe = Join-Path $Output "SoldaduraAnalyzer.exe"
+    $exe = Join-Path $Output "Concentrica.exe"
     Write-Host "`nListo. Ejecutable: $exe" -ForegroundColor Green
 }

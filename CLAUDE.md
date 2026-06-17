@@ -271,7 +271,7 @@ derecha (380 px): "Resultados" + "Tendencia de runout".
 - `NullableDoubleConverter`: como el anterior pero vacío↔null y admite negativos (para el ajuste
   aplicado del robot, que puede ir en cualquier dirección o no haberse registrado).
 - `ModeloReferenciaConverter`: nombres legibles del enum `ModeloReferencia` para el ComboBox (presentación).
-- `ConfiguracionApp`: persiste `RaizHistorial` y `TemaOscuro` en `%LOCALAPPDATA%\SoldaduraAnalyzer\config.json`.
+- `ConfiguracionApp`: persiste `RaizHistorial` y `TemaOscuro` en `%LOCALAPPDATA%\Concentrica\config.json`.
 
 **Panel izquierdo** (`MainWindow.xaml`):
 - GroupBox "Perfil de soldadura": ComboBox de plantillas + Cargar/Eliminar; TextBox nombre + Guardar.

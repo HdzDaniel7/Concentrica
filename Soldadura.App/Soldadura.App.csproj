@@ -20,11 +20,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <AssemblyName>SoldaduraAnalyzer</AssemblyName>
-    <Product>Analizador de concentricidad de soldadura</Product>
-    <Description>Evalúa centrado/concentricidad y penetración de soldaduras láser contra una norma, recomienda el ajuste del robot (X/Y/Z) y marca lo fuera de especificación en 3D.</Description>
+    <AssemblyName>Concentrica</AssemblyName>
+    <Product>Concéntrica</Product>
+    <Description>Concéntrica — evalúa centrado/concentricidad y penetración de soldaduras láser contra una norma, recomienda el ajuste del robot (X/Y/Z) y marca lo fuera de especificación en 3D.</Description>
     <Version>0.1.0</Version>
-    <Company>Soldadura Analyzer</Company>
+    <Company>Concéntrica</Company>
   </PropertyGroup>
 
 </Project>

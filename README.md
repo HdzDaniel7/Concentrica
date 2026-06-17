@@ -1,4 +1,6 @@
-# Analizador de concentricidad de soldadura
+# Concéntrica
+
+> Analizador de concentricidad de soldadura
 
 Aplicación de escritorio **local y autónoma** para Windows que, a partir de mediciones
 metalográficas de soldaduras láser (circulares o lineales), evalúa **centrado/concentricidad** y
@@ -104,7 +106,7 @@ El script `publish.ps1` genera un **.exe self-contained de archivo único** en `
 
 ```powershell
 ./publish.ps1
-# Resultado: publish/SoldaduraAnalyzer.exe  (≈ 69 MB, no requiere instalar .NET)
+# Resultado: publish/Concentrica.exe  (≈ 69 MB, no requiere instalar .NET)
 ```
 
 Opciones:
@@ -113,7 +115,7 @@ Opciones:
 ./publish.ps1 -Runtime win-x64 -Output dist -Configuration Release
 ```
 
-Para distribuir basta con copiar `SoldaduraAnalyzer.exe`.
+Para distribuir basta con copiar `Concentrica.exe`.
 
 ## Flujo de uso
 

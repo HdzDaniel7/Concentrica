@@ -4,7 +4,7 @@ using System.Text.Json;
 namespace Soldadura.App;
 
 /// <summary>
-/// Configuración persistida entre sesiones en %LOCALAPPDATA%\SoldaduraAnalyzer\config.json.
+/// Configuración persistida entre sesiones en %LOCALAPPDATA%\Concentrica\config.json.
 /// Todo lo que se guarda aquí debe ser información de entorno del usuario (rutas, preferencias de UI),
 /// nunca datos de estudio (esos van en el historial de carpetas).
 /// </summary>
@@ -17,7 +17,7 @@ internal sealed class ConfiguracionApp
 
     private static readonly string _rutaArchivo = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "SoldaduraAnalyzer", "config.json");
+        "Concentrica", "config.json");
 
     public static ConfiguracionApp Cargar()
     {

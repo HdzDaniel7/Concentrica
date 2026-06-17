@@ -6,7 +6,7 @@
         xmlns:conv="clr-namespace:Soldadura.App.Converters"
         xmlns:controls="clr-namespace:Soldadura.App.Controls"
         xmlns:avd="https://github.com/Dirkster99/AvalonDock"
-        Title="Analizador de concentricidad de soldadura"
+        Title="Concéntrica — Analizador de concentricidad de soldadura"
         Height="740" Width="1280" MinHeight="600" MinWidth="900"
         Background="{DynamicResource PincelFondoVentana}"
         Foreground="{DynamicResource PincelTextoPrimario}">
@@ -802,7 +802,7 @@
                         Command="{Binding CambiarTemaCommand}"
                         Padding="10,3" MinWidth="0" FontSize="12"
                         ToolTip="Alternar entre tema claro y oscuro"/>
-                <TextBlock Text="Analizador de concentricidad de soldadura"
+                <TextBlock Text="Concéntrica · Analizador de concentricidad de soldadura"
                            Foreground="{DynamicResource PincelTextoSecundario}"
                            FontSize="11" VerticalAlignment="Center"/>
             </DockPanel>
