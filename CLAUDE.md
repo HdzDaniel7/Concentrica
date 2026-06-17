@@ -254,6 +254,11 @@ Cada modelo declara: medidas crudas que pide + fórmulas para anchoCordon / posi
 6 paneles: izquierda (340 px): "Perfil · Estudio · Objetivo · Especificaciones" + "Historial";
 centro: documentos "Muestras" / "Imagen · Medición" / "Vista 3D";
 derecha (380 px): "Resultados" + "Tendencia de runout".
+- Tema de AvalonDock: el chrome del DockingManager (pestañas de documentos/anclables, fondos de
+  panel, splitters) NO sigue los DynamicResource de la app; sin tema propio la pestaña activa y
+  algunos fondos quedaban BLANCOS en modo oscuro. `MainWindow` aplica `Vs2013DarkTheme`/`Vs2013LightTheme`
+  (paquete `Dirkster.AvalonDock.Themes.VS2013`) según `MainViewModel.TemaOscuro` y lo alterna al
+  cambiar de tema (suscripción a PropertyChanged). Imprescindible para que el modo oscuro se vea bien.
 
 **Estilos y temas** (App.xaml + Window.Resources + Temas/):
 - `Temas/TemaClaro.xaml` y `Temas/TemaOscuro.xaml`: 20 recursos de color cada uno
