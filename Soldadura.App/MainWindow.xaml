@@ -80,11 +80,10 @@
             <Setter Property="Foreground" Value="{DynamicResource PincelTextoLectura}"/>
         </Style>
 
-        <!-- Separador de sección -->
-        <Style TargetType="Separator" x:Key="Sep">
-            <Setter Property="Background" Value="{DynamicResource PincelSeparador}"/>
-            <Setter Property="Margin"     Value="0,6,0,6"/>
-            <Setter Property="Height"     Value="1"/>
+        <!-- Separador de sección (hereda el template del estilo implícito que sí respeta el tema) -->
+        <Style TargetType="Separator" x:Key="Sep" BasedOn="{StaticResource {x:Type Separator}}">
+            <Setter Property="Margin" Value="0,6,0,6"/>
+            <Setter Property="Height" Value="1"/>
         </Style>
 
     </Window.Resources>

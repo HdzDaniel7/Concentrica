@@ -50,6 +50,8 @@ public partial class VisorImagen : UserControl
     {
         if (e.PropertyName == nameof(VisorImagenViewModel.RutaSeleccionada))
             CargarImagen(_vm?.RutaSeleccionada);
+        else if (e.PropertyName == nameof(VisorImagenViewModel.ColorMarca))
+            RedibujarOverlay();
     }
 
     private void OnMarcasChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) =>
@@ -167,6 +169,7 @@ public partial class VisorImagen : UserControl
         overlay.Children.Clear();
         if (_vm is null) return;
         double s = escala.ScaleX;
+        Brush pincel = _vm.PincelMarca;
 
         foreach (MarcaVisual m in _vm.Marcas)
         {
@@ -176,7 +179,7 @@ public partial class VisorImagen : UserControl
             var punto = new Ellipse
             {
                 Width = 10, Height = 10,
-                Stroke = Brushes.Yellow, StrokeThickness = 2, Fill = Brushes.Transparent
+                Stroke = pincel, StrokeThickness = 2, Fill = Brushes.Transparent
             };
             Canvas.SetLeft(punto, sx - 5);
             Canvas.SetTop(punto, sy - 5);
@@ -184,7 +187,7 @@ public partial class VisorImagen : UserControl
 
             var texto = new TextBlock
             {
-                Text = m.Etiqueta, Foreground = Brushes.Yellow, FontSize = 11, FontWeight = FontWeights.Bold
+                Text = m.Etiqueta, Foreground = pincel, FontSize = 11, FontWeight = FontWeights.Bold
             };
             Canvas.SetLeft(texto, sx + 7);
             Canvas.SetTop(texto, sy - 8);

@@ -36,6 +36,10 @@ public partial class MainViewModel : ObservableObject
         ThemeManager.Aplicar(_config.TemaOscuro);
         _temaOscuro = _config.TemaOscuro;
 
+        // Restaurar color de marcas de medición
+        if (Enum.TryParse<ColorMarca>(_config.ColorMarcaMedicion, out var color))
+            Visor.ColorMarca = color;
+
         if (!string.IsNullOrWhiteSpace(_config.RaizHistorial))
         {
             RaizHistorial = _config.RaizHistorial;
@@ -329,6 +333,13 @@ public partial class MainViewModel : ObservableObject
         _config.Guardar();
     }
 
+    /// <summary>Persiste el color de marcas de medición elegido en el visor.</summary>
+    public void PersistirColorMarca(string nombre)
+    {
+        _config.ColorMarcaMedicion = nombre;
+        _config.Guardar();
+    }
+
     // ── Diagrama de ejes ──────────────────────────────────────────────────────────
 
     [RelayCommand]
@@ -412,7 +423,7 @@ public partial class MainViewModel : ObservableObject
             string rutaOverlay = Path.Combine(carpeta, EstudioRepositorio.CarpetaOverlays, nombre);
             try
             {
-                OverlayGenerator.Generar(rutaImagen, m.MarcasMedicion, rutaOverlay);
+                OverlayGenerator.Generar(rutaImagen, m.MarcasMedicion, rutaOverlay, Visor.ColorMarcaMedia);
                 m.RutaOverlay = Path.Combine(EstudioRepositorio.CarpetaOverlays, nombre);
                 actualizarJson = true;
             }

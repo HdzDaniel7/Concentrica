@@ -19,7 +19,12 @@ internal static class OverlayGenerator
     private const double TamTexto = 11;
     private const double PxPorDip = 1.25;
 
-    public static void Generar(string rutaImagen, MarcasMedicion marcas, string rutaSalida)
+    /// <param name="colorMarcas">
+    /// Si se indica, las cruces de los 8 puntos usan ese color (elegido por el usuario);
+    /// las rectas y cotas conservan sus colores semánticos. null = colores por tipo.
+    /// </param>
+    public static void Generar(string rutaImagen, MarcasMedicion marcas, string rutaSalida,
+        Color? colorMarcas = null)
     {
         var bmp = new BitmapImage();
         bmp.BeginInit();
@@ -63,14 +68,16 @@ internal static class OverlayGenerator
             }
 
             // ── Cruces en los 8 puntos de marca ──────────────────────────────────────
-            DibujarCruz(dc, marcas.DatumA, Brushes.Yellow);
-            DibujarCruz(dc, marcas.DatumB, Brushes.Yellow);
-            DibujarCruz(dc, marcas.SuperficieA, Brushes.Lime);
-            DibujarCruz(dc, marcas.SuperficieB, Brushes.Lime);
-            DibujarCruz(dc, marcas.BordeCercano, Brushes.Orange);
-            DibujarCruz(dc, marcas.BordeLejano, Brushes.Orange);
-            DibujarCruz(dc, marcas.Fondo, Brushes.Cyan);
-            DibujarCruz(dc, marcas.Corona, Brushes.Magenta);
+            // Si el usuario eligió un color de marcas, todas las cruces lo usan; si no, color por tipo.
+            Brush? elegido = colorMarcas is Color c ? new SolidColorBrush(c) : null;
+            DibujarCruz(dc, marcas.DatumA, elegido ?? Brushes.Yellow);
+            DibujarCruz(dc, marcas.DatumB, elegido ?? Brushes.Yellow);
+            DibujarCruz(dc, marcas.SuperficieA, elegido ?? Brushes.Lime);
+            DibujarCruz(dc, marcas.SuperficieB, elegido ?? Brushes.Lime);
+            DibujarCruz(dc, marcas.BordeCercano, elegido ?? Brushes.Orange);
+            DibujarCruz(dc, marcas.BordeLejano, elegido ?? Brushes.Orange);
+            DibujarCruz(dc, marcas.Fondo, elegido ?? Brushes.Cyan);
+            DibujarCruz(dc, marcas.Corona, elegido ?? Brushes.Magenta);
         }
 
         var rtb = new RenderTargetBitmap(bmp.PixelWidth, bmp.PixelHeight, 96, 96, PixelFormats.Pbgra32);

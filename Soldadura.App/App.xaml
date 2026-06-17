@@ -36,6 +36,9 @@
             </Style>
 
             <!-- ── GroupBox (implícito) ───────────────────────────────────── -->
+            <!-- Template propio: el template por defecto de WPF dibuja el borde con un color
+                 fijo e ignora BorderBrush, por eso no cambiaba en modo oscuro. Aquí el borde
+                 usa TemplateBinding BorderBrush → sigue el tema. -->
             <Style TargetType="GroupBox">
                 <Setter Property="BorderBrush"     Value="{DynamicResource PincelBorde}"/>
                 <Setter Property="BorderThickness" Value="1"/>
@@ -43,6 +46,46 @@
                 <Setter Property="Margin"          Value="0,0,0,6"/>
                 <Setter Property="Foreground"      Value="{DynamicResource PincelPrimario}"/>
                 <Setter Property="FontWeight"      Value="SemiBold"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="GroupBox">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <ContentPresenter Grid.Row="0" ContentSource="Header"
+                                                  RecognizesAccessKey="True"
+                                                  TextElement.Foreground="{TemplateBinding Foreground}"
+                                                  TextElement.FontWeight="{TemplateBinding FontWeight}"
+                                                  TextElement.FontSize="13"
+                                                  Margin="2,0,0,3"/>
+                                <Border Grid.Row="1"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        Background="{TemplateBinding Background}"
+                                        CornerRadius="4">
+                                    <ContentPresenter Margin="{TemplateBinding Padding}"/>
+                                </Border>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- ── Separator (implícito) ──────────────────────────────────── -->
+            <!-- Igual que GroupBox: el template por defecto no respeta Background, así que el
+                 separador no cambiaba de color. Este lo pinta con una brocha del tema. -->
+            <Style TargetType="Separator">
+                <Setter Property="Background" Value="{DynamicResource PincelSeparador}"/>
+                <Setter Property="Margin"     Value="0,6"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Separator">
+                            <Border Background="{TemplateBinding Background}" SnapsToDevicePixels="True"/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
 
             <!-- ── DataGrid (implícito) ───────────────────────────────────── -->

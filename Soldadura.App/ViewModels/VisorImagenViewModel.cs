@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json;
+using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
@@ -21,6 +22,24 @@ public enum Herramienta
     SuperficieB,
     Fondo,
     Corona
+}
+
+/// <summary>Color de los marcadores de medición sobre la imagen (elegible por el usuario).</summary>
+public enum ColorMarca { Blanco, Verde, Amarillo, Rojo, Azul, Negro }
+
+/// <summary>Mapea cada <see cref="ColorMarca"/> a un color visible para dibujar las marcas.</summary>
+public static class ColoresMarca
+{
+    public static Color Media(ColorMarca c) => c switch
+    {
+        ColorMarca.Blanco   => Colors.White,
+        ColorMarca.Verde    => Color.FromRgb(0x2E, 0xCC, 0x40),
+        ColorMarca.Amarillo => Colors.Yellow,
+        ColorMarca.Rojo     => Color.FromRgb(0xFF, 0x41, 0x36),
+        ColorMarca.Azul     => Color.FromRgb(0x1E, 0x90, 0xFF),
+        ColorMarca.Negro    => Colors.Black,
+        _                   => Colors.Yellow
+    };
 }
 
 /// <summary>Un marcador para el overlay: etiqueta + posición en píxeles de la imagen.</summary>
@@ -65,6 +84,19 @@ public partial class VisorImagenViewModel : ObservableObject
     [ObservableProperty] private Herramienta _herramienta = Herramienta.DatumA;
     [ObservableProperty] private string _estado = "Elige una carpeta de imágenes.";
     [ObservableProperty] private string _medidasPreview = "";
+
+    /// <summary>Color elegido por el usuario para los marcadores de medición sobre la imagen.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PincelMarca))]
+    private ColorMarca _colorMarca = ColorMarca.Amarillo;
+
+    /// <summary>Brocha del color de marca seleccionado (para el overlay en pantalla).</summary>
+    public Brush PincelMarca => new SolidColorBrush(ColoresMarca.Media(ColorMarca));
+
+    /// <summary>Color de marca seleccionado (para el overlay PNG que se guarda).</summary>
+    public Color ColorMarcaMedia => ColoresMarca.Media(ColorMarca);
+
+    partial void OnColorMarcaChanged(ColorMarca value) => _main.PersistirColorMarca(value.ToString());
 
     [ObservableProperty] private PerfilMicroscopioModel? _perfilSeleccionado;
 

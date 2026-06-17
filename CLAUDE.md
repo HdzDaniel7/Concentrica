@@ -265,13 +265,19 @@ derecha (380 px): "Resultados" + "Tendencia de runout".
 - Barra de estado (StatusBar) debajo del DockingManager: título de app a la izquierda + botón toggle
   "🌙 Oscuro" / "☀ Claro" a la derecha (`CambiarTemaCommand`); siempre visible sin tapar el workspace.
 - Todos los estilos implícitos (Button, GroupBox, DataGrid, DataGridRow, DataGridColumnHeader,
-  ListBox, ComboBox) y keyed ("Lbl", "Campo", "CampoLectura") usan `DynamicResource` → adaptan al tema.
+  ListBox, ComboBox, Separator) y keyed ("Lbl", "Campo", "CampoLectura") usan `DynamicResource` → adaptan al tema.
+- `GroupBox` y `Separator` llevan `ControlTemplate` propio (App.xaml): el template por defecto de WPF
+  pinta el borde/lá­mina con un color FIJO e ignora BorderBrush/Background, por eso no cambiaban en
+  modo oscuro. Los templates propios usan `TemplateBinding` → el borde de cada formulario y los
+  separadores siguen `PincelBorde`/`PincelSeparador`. El `Sep` con clave hereda (`BasedOn`) del implícito.
 - `PositiveDoubleRule`: `ValidationRule` WPF (acepta coma o punto; rechaza ≤0 o vacío).
 - `DoubleFlexibleConverter`: IValueConverter coma/punto bidireccional.
 - `NullableDoubleConverter`: como el anterior pero vacío↔null y admite negativos (para el ajuste
   aplicado del robot, que puede ir en cualquier dirección o no haberse registrado).
 - `ModeloReferenciaConverter`: nombres legibles del enum `ModeloReferencia` para el ComboBox (presentación).
-- `ConfiguracionApp`: persiste `RaizHistorial` y `TemaOscuro` en `%LOCALAPPDATA%\Concentrica\config.json`.
+- `ColorMarcaABrushConverter`: enum `ColorMarca` → brocha (swatch del selector de color de marcas).
+- `ConfiguracionApp`: persiste `RaizHistorial`, `TemaOscuro` y `ColorMarcaMedicion` en
+  `%LOCALAPPDATA%\Concentrica\config.json`.
 
 **Panel izquierdo** (`MainWindow.xaml`):
 - GroupBox "Perfil de soldadura": ComboBox de plantillas + Cargar/Eliminar; TextBox nombre + Guardar.
@@ -293,6 +299,9 @@ derecha (380 px): "Resultados" + "Tendencia de runout".
   Exceso / Calidad / Ancho / PosicionCentral / Modo); barra con Agregar/Quitar/Ejemplos/Ordenar.
 - "Imagen · Medición": `VisorImagen` (UserControl) con `VisorImagenViewModel`.
   Zoom (rueda centrada), pan, Ajustar/1:1; overlay Canvas de marcas (tamaño constante);
+  selector "Color marcas" (ComboBox con swatch): 6 colores (Blanco/Verde/Amarillo/Rojo/Azul/Negro)
+  vía `ColorMarca`/`ColoresMarca`; `VisorImagenViewModel.PincelMarca`/`ColorMarcaMedia` lo aplican al
+  overlay en pantalla y al PNG (OverlayGenerator.Generar recibe el color); persiste en ConfiguracionApp.
   tira de miniaturas PNG/JPG/TIFF; calibración px→mm; herramienta 8 puntos en orden;
   DOS botones: "Crear muestra" (nueva fila + limpiar marcas) / "Actualizar seleccionada" (corrección);
   catálogo de perfiles de microscopio (JSON en raíz).

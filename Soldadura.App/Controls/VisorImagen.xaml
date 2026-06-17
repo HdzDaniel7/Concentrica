@@ -7,9 +7,15 @@
     <UserControl.Resources>
         <conv:DoubleFlexibleConverter x:Key="Dbl"/>
         <conv:FileNameConverter x:Key="FileName"/>
+        <conv:ColorMarcaABrushConverter x:Key="ColorMarcaABrush"/>
         <ObjectDataProvider x:Key="Herramientas" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="vm:Herramienta"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="ColoresMarca" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="vm:ColorMarca"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </UserControl.Resources>
@@ -30,6 +36,21 @@
             <ComboBox ItemsSource="{Binding Source={StaticResource Herramientas}}"
                       SelectedItem="{Binding Herramienta}" Width="120"/>
             <Button Content="Limpiar marcas" Command="{Binding LimpiarMarcasCommand}" Padding="6,2" Margin="6,0,0,0"/>
+            <TextBlock Text="Color marcas:" VerticalAlignment="Center" Margin="12,0,4,0"/>
+            <ComboBox SelectedItem="{Binding ColorMarca}" Width="104"
+                      ItemsSource="{Binding Source={StaticResource ColoresMarca}}"
+                      ToolTip="Color de los marcadores de medición sobre la imagen.">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Border Width="12" Height="12" Margin="0,0,6,0" CornerRadius="2"
+                                    BorderBrush="#888" BorderThickness="1"
+                                    Background="{Binding Converter={StaticResource ColorMarcaABrush}}"/>
+                            <TextBlock Text="{Binding}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
             <TextBlock Text="Áng/Pos:" VerticalAlignment="Center" Margin="12,0,4,0"/>
             <TextBox Text="{Binding Angulo, Converter={StaticResource Dbl}, UpdateSourceTrigger=LostFocus}" Width="56"
                      ToolTip="Ángulo (circular) o posición (lineal) del corte para la muestra que se cree."/>

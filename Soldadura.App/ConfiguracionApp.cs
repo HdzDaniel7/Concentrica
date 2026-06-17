@@ -15,6 +15,9 @@ internal sealed class ConfiguracionApp
     /// <summary>true = tema oscuro; false = tema claro (default).</summary>
     public bool TemaOscuro { get; set; } = false;
 
+    /// <summary>Color elegido para los marcadores de medición (nombre del enum ColorMarca).</summary>
+    public string ColorMarcaMedicion { get; set; } = "Amarillo";
+
     private static readonly string _rutaArchivo = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "Concentrica", "config.json");
